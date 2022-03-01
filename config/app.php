@@ -58,6 +58,14 @@ return [
 
     'asset_url' => env('ASSET_URL'),
 
+    'ABX_API_URL' => env('ABX_API_URL', 'http://localhost'),
+    'ABX_API_PARTNER' => env('ABX_API_URL', 'actionbet'),
+    'ABX_API_SECRET_KEY' => env('ABX_API_URL', 'dlor0596ifksn2laoc94m596sk4n5ls'),
+    'ABX_API_ROOT' => env('ABX_API_URL', 'actionbet'),
+    'ABX_API_SKIN' => env('ABX_API_URL', 'actionbet'),
+    'ABX_API_PARENT' => env('ABX_API_URL', 'actionbetag'),
+    'ABX_API_BO_USERNAME' => env('ABX_API_URL', 'actionbet'),
+    'ABX_API_BO_PASSWORD' => env('ABX_API_URL', '774422Xx'),
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
