@@ -15,7 +15,7 @@ class UserController extends Controller
     use AuthUserManager;
     use RemoteAPIServerPlayerActions;
 
-    public object $user;
+    public $user;
 
     public function __construct(Request $request)
     {

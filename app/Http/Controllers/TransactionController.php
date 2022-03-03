@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Wallet;
 use App\Traits\APIResponse;
 use App\Traits\AuthUserManager;
+use App\Traits\PaystackJsonRequestBuilder;
 use App\Traits\RemoteAPIServerTransactionActions;
 use Illuminate\Http\Request;
 
@@ -15,7 +16,8 @@ class TransactionController extends Controller
     use APIResponse;
     use AuthUserManager;
     use RemoteAPIServerTransactionActions;
-    public object $user;
+    use PaystackJsonRequestBuilder;
+    public $user;
 
     public function __construct(Request $request)
     {
@@ -60,15 +62,18 @@ class TransactionController extends Controller
         ]);
         $data = [
             'amount' => $request->amount,
-            'action' => '"withdrawal_money',
+            'action' => 'withdrawal_money',
             'note'   => $request->note,
             'username'   => $this->user->username,
             'user_type' => $this->user->user_type
         ];
 
+        //If payment is successful through the payment gateway
+
+
         // Debit user account
         $debitUserResponse = $this->debitUser($data);
-        if ($debitUserResponse->errorResponse === "SUCCESS"){
+        if ($debitUserResponse['errorCode'] === "SUCCESS"){
             //Finally return the server response if fails
             return $this->successResponse($debitUserResponse, 200);
         }
@@ -111,9 +116,9 @@ class TransactionController extends Controller
             ]);
 
             //Finally return the server response
-            return $this->successResponse($transactionDetails, 200);
+            return $transactionDetails;
         }
-        return $this->errorResponse($response, 200);
+        return $response;
     }
 
     public function debitUser($data){
@@ -144,21 +149,41 @@ class TransactionController extends Controller
             // user_type is Player, then deduct from agency
             Transaction::create([
                 'user_id' => $this->user->id,
-                'payment_type' => 'Deposit',
+                'payment_type' => 'Withdrawal',
                 'status'    => ucwords($response['errorCode']),
                 'amount'    =>  $data['amount']
             ]);
 
             //Finally return the server response
-            return $this->successResponse($transactionDetails, 200);
+            return $transactionDetails;
         }
-        return $this->errorResponse($response, 200);
+        return $response;
     }
 
-    public function initiatePaymentGateway(){
+    public function initiatePaymentGateway($data){
+        $data = [
+            "email" => $this->user,
+            "amount" => $data['amount'],
+        ];
+        $response =  $this->sendPaymentCharge(getenv('PAYSTACK_PUBLIC_KEY'), $data);
 
-
+        error_log($response['message']);
         return true;
+    }
+
+    public function initiatePaymentGatewayTest(Request $request){
+        $request->validate([
+            'amount' => 'required|numeric',
+        ]);
+        $data = [
+            "email" => $this->user->email,
+            "amount" => $request->amount,
+        ];
+        $response =  $this->sendPaymentCharge(getenv('PAYSTACK_PAYMENT_URL'), $this->buildChargeRequestData($data));
+
+        error_log($response['message']);
+        return $this->successResponse($response, 200);
+//        return true;
     }
 
 
