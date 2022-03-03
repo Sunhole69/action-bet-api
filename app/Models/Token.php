@@ -9,4 +9,9 @@ class Token extends Model
 {
     use HasFactory;
     protected $fillable = ['created_at', 'token', 'username', 'user_type'];
+
+    public function owner(){
+        $this->belongsTo(User::class, 'username', 'username');
+    }
+
 }

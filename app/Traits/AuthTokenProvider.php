@@ -56,7 +56,7 @@ trait AuthTokenProvider
     private function initiateAgencyToken($data){
         $data['user_type'] = 'Agency';
         $data['action'] = 'authenticate';
-        return $this->fetchUserToken($data);
+        return $this->fetchAgencyToken($data);
     }
 
     private function initiatePlayerToken($data){
@@ -99,6 +99,39 @@ trait AuthTokenProvider
 
     }
 
+    public function fetchAgencyToken($data)
+    {
+        // Check if user has a token
+        $localToken = Token::where('username', $data['agency'])->first();
+        if($localToken){
+            // Check if the token is still valid
+            if ($this->checkTokenValidity($localToken)){
+                return $localToken->token;
+            }
+            // Retrieve new token from the remote server
+            $remoteToken =  $this->getAgencyRemoteToken($data);
+
+            //Update the old token record
+            $localToken->update([
+                'token' => $remoteToken['data']['token'],
+                'created_at' => Carbon::now(),
+            ]);
+            // If the user token;
+            return $remoteToken['data']['token'];
+        }else{
+            // Retrieve new token from the remote server
+            $remoteToken =  $this->getAgencyRemoteToken($data);
+            Token::create([
+                'token' => $remoteToken['data']['token'],
+                'user_type' => $data['user_type'],
+                'username' => $data['agency']
+            ]);
+            // If the user token;
+            return $remoteToken['data']['token'];
+        }
+
+    }
+
     private function getUserRemoteToken($data){
         $jsonData = $this->buildUserLoginData($data);
 
@@ -117,7 +150,7 @@ trait AuthTokenProvider
     public function fetchAgentToken($data)
     {
         // Check if user has a token
-        $localToken = Affiliate::where('username', $data['username'])->first();
+        $localToken = Token::where('username', $data['username'])->first();
         if($localToken){
             // Check if the token is still valid
             if ($this->checkTokenValidity($localToken)){
@@ -147,8 +180,8 @@ trait AuthTokenProvider
 
     }
 
-    private function getAgentRemoteToken($data){
-        $jsonData = $this->buildAdminLoginData($data);
+    private function getAgencyRemoteToken($data){
+        $jsonData = $this->buildAgentLoginData($data);
         return $this->send($this->url, $jsonData);
     }
 

@@ -26,6 +26,8 @@ class User extends Authenticatable
         'email',
         'phone',
         'password',
+        'agency',
+        'user_type',
         'enabled'
     ];
 
@@ -50,5 +52,13 @@ class User extends Authenticatable
 
     public function setPasswordAttribute($value){
         $this->attributes['password'] = bcrypt($value);
+    }
+
+    public function wallet(){
+        return $this->hasOne(Wallet::class);
+    }
+
+    public function transactions(){
+        return $this->hasMany(Transaction::class);
     }
 }

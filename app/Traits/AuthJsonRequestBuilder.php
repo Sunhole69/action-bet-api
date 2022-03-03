@@ -31,7 +31,7 @@ trait AuthJsonRequestBuilder
             'secretkey' => $this->ABX_API_SECRETE_KEY,
             'action' => $data['action'],
             'data' => [
-                'username' => $data['username'],
+                'username' => $data['agency'],
                 'password' => $this->ABX_API_BO_PASSWORD,
             ]
         ];
@@ -88,7 +88,7 @@ trait AuthJsonRequestBuilder
             'token'  => $data['agency_token'],
             'data' => [
                 "parent" => $this->ABX_API_AGENT_USERNAME,
-                "role" => $data['role'],
+                "role" => strtolower($data['user_type']),
                 "username" => $data['username'],
                 "password" => $this->ABX_API_BO_PASSWORD,
                 "firstname" => $data['firstname'],
