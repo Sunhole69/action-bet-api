@@ -21,8 +21,6 @@ use Illuminate\Support\Facades\Route;
 // Routes that are not needed now
 Route::post('agency/login', [AuthController::class, 'agencyLogin']);
 Route::post('admin/login',  [AuthController::class, 'adminLogin']);
-Route::get('/user/{id}',    [UserController::class, 'show']);
-Route::get('/players',      [UserController::class, 'index']);
 Route::patch('/user/update-status/{user_id}', [UserController::class, 'updateUserStatus']);
 // End of routes that are not needed now
 
@@ -39,6 +37,7 @@ Route::group(['middleware' => ['token-check']], function () {
     Route::post('/payment/withdraw',                [TransactionController::class, 'deposit']);
     Route::get('/user/{id}',                        [UserController::class, 'show']);
     Route::get('/user/me',                          [UserController::class, 'showMe']);
+    Route::get('/players',                          [UserController::class, 'index']);
     Route::patch('/user/update-password/{user_id}', [UserController::class, 'updatePassword']);
 });
 
