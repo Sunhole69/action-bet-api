@@ -36,6 +36,9 @@ Route::post('/agency/sign-up',  [AuthController::class, 'registerAffiliate']);
 // Protected routes
 Route::group(['middleware' => ['token-check']], function () {
     Route::post('/payment/deposit', [TransactionController::class, 'deposit']);
+    Route::post('/payment/withdraw', [TransactionController::class, 'deposit']);
+    Route::get('/user/{id}',    [UserController::class, 'show']);
+    Route::get('/user/me',    [UserController::class, 'showMe']);
     Route::patch('/user/update-password/{user_id}', [UserController::class, 'updatePassword']);
 });
 

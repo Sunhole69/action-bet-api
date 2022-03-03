@@ -5,14 +5,22 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Traits\APIResponse;
 use App\Traits\AuthTokenProvider;
+use App\Traits\AuthUserManager;
 use App\Traits\RemoteAPIServerPlayerActions;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
     use APIResponse;
+    use AuthUserManager;
     use RemoteAPIServerPlayerActions;
 
+    public object $user;
+
+    public function __construct(Request $request)
+    {
+        $this->user = $this->getCurrentUser($request);
+    }
 
     /**
      * Display a listing of the resource.
@@ -60,6 +68,16 @@ class UserController extends Controller
         // Fetch user info online
         $data = [
             'username'  => $user->username,
+        ];
+        $response =  $this->fetchPlayerDetailsRemotely($data);
+        // Use the returned token for the user details request
+        return $this->successResponse($response, 200);
+    }
+
+    public function showMe(){
+        // Fetch user info online
+        $data = [
+            'username'  => $this->user->username,
         ];
         $response =  $this->fetchPlayerDetailsRemotely($data);
         // Use the returned token for the user details request

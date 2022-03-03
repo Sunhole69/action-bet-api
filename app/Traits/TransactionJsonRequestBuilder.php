@@ -11,7 +11,7 @@ trait TransactionJsonRequestBuilder
     /*
      * Login Json Data formatters
      */
-    private function buildUserDepositData($data){
+    private function buildUserTransactionData($data){
         $dataBuild = [
             'partner' => $this->ABX_API_PARTNER,
             'secretkey' => $this->ABX_API_SECRETE_KEY,

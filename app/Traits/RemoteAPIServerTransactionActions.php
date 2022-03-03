@@ -12,7 +12,7 @@ trait RemoteAPIServerTransactionActions
     /*
      * Player Authentication methods
      */
-    private function depositRemotely($data){
+    private function initiateRemoteTransaction($data){
         // Get the admin token and send along the request
         if ($data['user_type'] === 'Player') {
             $data['token'] = $this->initiatePlayerToken($data);
@@ -21,8 +21,7 @@ trait RemoteAPIServerTransactionActions
             $data['token'] = $this->initiateAgencyToken($data);
         }
 
-        $data['action'] = 'deposit_money';
-        $jsonData = $this->buildUserDepositData($data);
+        $jsonData = $this->buildUserTransactionData($data);
         return $this->send($this->url, $jsonData);
     }
 
