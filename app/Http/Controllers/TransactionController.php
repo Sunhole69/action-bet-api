@@ -127,23 +127,23 @@ class TransactionController extends Controller
 
         if ($response['errorCode'] === "SUCCESS"){
             Transaction::create([
-                'user_id' => $this->user->id,
+                'user_id'      => $this->user->id,
                 'payment_type' => 'Withdrawal',
-                'status'    => ucwords($response['errorCode']),
-                'amount'    =>  $data['amount']
+                'status'       => ucwords($response['errorCode']),
+                'amount'       =>  $data['amount']
             ]);
 
             //Update user wallet
             $this->user->wallet->update([
-                'user_id' => $this->user->id,
+                'user_id'  => $this->user->id,
                 'balance'  => $this->user->wallet->balance -  $data['amount']
             ]);
 
             $wallet = Wallet::where('user_id', $this->user->id)->first();
             $transactionDetails = [
-                "errorCode" => "SUCCESS",
+                "errorCode"           => "SUCCESS",
                 'transaction-details' => $response['data'],
-                'wallet' => $wallet
+                'wallet'              => $wallet
             ];
 
             // user_type is Player, then deduct from agency
@@ -184,6 +184,16 @@ class TransactionController extends Controller
         error_log($response['message']);
         return $this->successResponse($response, 200);
 //        return true;
+    }
+
+    public function myTransactions(){
+        $transactions = Transaction::orderBy('created_at', 'DESC')->where('user_id', $this->user->id)->get();
+        return $this->showAll($transactions);
+    }
+
+    public function myWallet(){
+        $wallet = Wallet::where('user_id', $this->user->id)->first();
+        return $this->showOne($wallet);
     }
 
 
