@@ -20,8 +20,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Routes that are not needed now
-Route::post('agency/login', [AuthController::class, 'agencyLogin']);
-Route::post('admin/login',  [AuthController::class, 'adminLogin']);
+Route::post('agency/login',                   [AuthController::class, 'agencyLogin']);
+Route::post('admin/login',                    [AuthController::class, 'adminLogin']);
 Route::patch('/user/update-status/{user_id}', [UserController::class, 'updateUserStatus']);
 // End of routes that are not needed now
 
@@ -47,10 +47,11 @@ Route::group(['middleware' => ['token-check']], function () {
 
 
     // Sports Book Section
-    Route::get('/sport-book/sports',                [SportBookController::class, 'fetchPrematchSports']);
-    Route::get('/sport-book/groups/{sport_id}',     [SportBookController::class, 'fetchPrematchSportGroups']);
-    Route::get('/sport-book/leagues/{group_id}',    [SportBookController::class, 'fetchPrematchGroupLeagues']);
-    Route::get('/sport-book/events/{league_id}',    [SportBookController::class, 'fetchPrematchLeagueEvents']);
+    Route::get('/sport-book/prematch/sports',                [SportBookController::class, 'fetchPrematchSports']);
+    Route::get('/sport-book/prematch/groups/{sport_id}',     [SportBookController::class, 'fetchPrematchSportGroups']);
+    Route::get('/sport-book/prematch/leagues/{group_id}',    [SportBookController::class, 'fetchPrematchGroupLeagues']);
+    Route::get('/sport-book/prematch/events/{league_id}',    [SportBookController::class, 'fetchPrematchLeagueEvents']);
+    Route::get('/sport-book/prematch/sync',                  [SportBookController::class, 'syncSportBook']);
 
 });
 
