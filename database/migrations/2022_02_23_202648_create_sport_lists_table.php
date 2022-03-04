@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->integer('sport_id');
             $table->string('name');
-            $table->integer('event_count');
+            $table->integer('events_count');
             $table->timestamps();
         });
     }

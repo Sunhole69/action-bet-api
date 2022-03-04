@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class SportList extends Model
 {
     use HasFactory;
+    protected $fillable = [
+      'sport_id',
+      'name',
+      'events_count'
+    ];
 }

@@ -15,11 +15,11 @@ return new class extends Migration
     {
         Schema::create('sport_leagues', function (Blueprint $table) {
             $table->id();
-            $table->integer('group_id');
+            $table->string('group_id');
             $table->integer('champ_id');
             $table->string('name');
             $table->string('country_code')->nullable();
-            $table->integer('event_counts');
+            $table->integer('events_count');
             $table->timestamps();
         });
     }

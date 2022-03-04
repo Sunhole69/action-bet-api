@@ -47,7 +47,10 @@ Route::group(['middleware' => ['token-check']], function () {
 
 
     // Sports Book Section
-    Route::get('/sport-book/sports',                [SportBookController::class, 'fetchSports']);
+    Route::get('/sport-book/sports',                [SportBookController::class, 'fetchPrematchSports']);
+    Route::get('/sport-book/groups/{sport_id}',     [SportBookController::class, 'fetchPrematchSportGroups']);
+    Route::get('/sport-book/leagues/{group_id}',    [SportBookController::class, 'fetchPrematchGroupLeagues']);
+    Route::get('/sport-book/events/{league_id}',    [SportBookController::class, 'fetchPrematchLeagueEvents']);
 
 });
 
