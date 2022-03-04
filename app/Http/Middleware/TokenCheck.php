@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use App\Traits\APIResponse;
-use App\Traits\AuthUserManager;
+use App\Traits\AuthHelpers\AuthUserManager;
+use App\Traits\RequestHelpers\APIResponse;
 use Closure;
 use Illuminate\Http\Request;
 

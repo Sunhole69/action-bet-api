@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Traits;
+namespace App\Traits\RequestHelpers;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Http;
 

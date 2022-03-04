@@ -1,8 +1,10 @@
 <?php
 
 
-namespace App\Traits;
+namespace App\Traits\JsonBuilders;
 
+
+use App\Traits\AuthHelpers\RemoteAPIServerCredentials;
 
 trait TransactionJsonRequestBuilder
 {

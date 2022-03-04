@@ -4,9 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Wallet;
-use App\Traits\APIResponse;
-use App\Traits\AuthTokenProvider;
-use App\Traits\RemoteAPIServerPlayerActions;
+use App\Traits\RequestHelpers\APIResponse;
+use App\Traits\RequestHelpers\RemoteAPIServerPlayerActions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 

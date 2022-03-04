@@ -1,11 +1,13 @@
 <?php
 
 
-namespace App\Traits;
+namespace App\Traits\AuthHelpers;
 
 
 use App\Models\Affiliate;
 use App\Models\Token;
+use App\Traits\JsonBuilders\AuthJsonRequestBuilder;
+use App\Traits\RequestHelpers\HttpResource;
 use Carbon\Carbon;
 use Carbon\Traits\Date;
 

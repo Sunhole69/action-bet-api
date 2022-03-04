@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Traits\APIResponse;
-use App\Traits\AuthTokenProvider;
-use App\Traits\AuthUserManager;
-use App\Traits\RemoteAPIServerPlayerActions;
+
+use App\Traits\AuthHelpers\AuthUserManager;
+use App\Traits\RequestHelpers\APIResponse;
+use App\Traits\RequestHelpers\RemoteAPIServerPlayerActions;
 use Illuminate\Http\Request;
 
 class UserController extends Controller

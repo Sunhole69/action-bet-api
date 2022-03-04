@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Traits\HttpResource;
+use App\Traits\RequestHelpers\HttpResource;
 use Illuminate\Http\Request;
 
 class TokenController extends Controller

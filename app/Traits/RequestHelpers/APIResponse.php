@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Traits;
+namespace App\Traits\RequestHelpers;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;

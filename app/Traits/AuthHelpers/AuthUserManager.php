@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Traits;
+namespace App\Traits\AuthHelpers;
 
 
 use App\Models\Token;

@@ -1,8 +1,11 @@
 <?php
 
 
-namespace App\Traits;
+namespace App\Traits\RequestHelpers;
 
+
+use App\Traits\AuthHelpers\AuthTokenProvider;
+use App\Traits\JsonBuilders\UserJsonRequestBuilder;
 
 trait RemoteAPIServerPlayerActions
 {

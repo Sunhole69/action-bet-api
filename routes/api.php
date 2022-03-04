@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SportBookController;
 use App\Http\Controllers\TokenController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
@@ -46,6 +47,7 @@ Route::group(['middleware' => ['token-check']], function () {
 
 
     // Sports Book Section
+    Route::get('/sport-book/sports',                [SportBookController::class, 'fetchSports']);
 
 });
 

@@ -5,10 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Wallet;
-use App\Traits\APIResponse;
-use App\Traits\AuthUserManager;
-use App\Traits\PaystackJsonRequestBuilder;
-use App\Traits\RemoteAPIServerTransactionActions;
+use App\Traits\AuthHelpers\AuthUserManager;
+use App\Traits\JsonBuilders\PaystackJsonRequestBuilder;
+use App\Traits\RequestHelpers\APIResponse;
+use App\Traits\RequestHelpers\RemoteAPIServerTransactionActions;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
