@@ -6,7 +6,7 @@ namespace App\Traits\JsonBuilders;
 
 use App\Traits\AuthHelpers\RemoteAPIServerCredentials;
 
-trait SportBookJsonRequestBuilder
+trait PrematchSportBookJsonRequestBuilder
 {
     use RemoteAPIServerCredentials;
 
@@ -28,7 +28,6 @@ trait SportBookJsonRequestBuilder
 
         return json_encode($dataBuild);
     }
-
 
     private function buildFetchPrematchSportGroupsData($data){
         $dataBuild = [
@@ -80,7 +79,6 @@ trait SportBookJsonRequestBuilder
 
         return json_encode($dataBuild);
     }
-
 
 
 }

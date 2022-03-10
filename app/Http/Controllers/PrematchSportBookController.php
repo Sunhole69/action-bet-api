@@ -7,16 +7,16 @@ use App\Models\SportLeague;
 use App\Models\SportList;
 use App\Traits\AuthHelpers\AuthUserManager;
 use App\Traits\RequestHelpers\APIResponse;
-use App\Traits\RequestHelpers\RemoteAPIServerSportBookActions;
+use App\Traits\RequestHelpers\RemoteAPIServerPrematchSportBookActions;
 use App\Traits\Utils\ArrayJsonManager;
 use Illuminate\Http\Request;
 
-class SportBookController extends Controller
+class PrematchSportBookController extends Controller
 {
     use APIResponse;
     use ArrayJsonManager;
     use AuthUserManager;
-    use RemoteAPIServerSportBookActions;
+    use RemoteAPIServerPrematchSportBookActions;
     public $user;
 
     public function __construct(Request $request)
@@ -164,7 +164,7 @@ class SportBookController extends Controller
     /*
      * Synchronizes the data in the db with remote server
      */
-    public function syncSportBook() {
+    public function syncPrematchSportBook() {
         $sportsArray = $this->initiateFetchAllPrematchSports();
         $sports = $this->arrayToJson($sportsArray);
 

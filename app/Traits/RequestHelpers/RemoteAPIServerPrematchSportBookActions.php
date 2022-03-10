@@ -5,13 +5,13 @@ namespace App\Traits\RequestHelpers;
 
 
 use App\Traits\AuthHelpers\AuthTokenProvider;
-use App\Traits\JsonBuilders\SportBookJsonRequestBuilder;
+use App\Traits\JsonBuilders\PrematchSportBookJsonRequestBuilder;
 use App\Traits\JsonBuilders\TransactionJsonRequestBuilder;
 
-trait RemoteAPIServerSportBookActions
+trait RemoteAPIServerPrematchSportBookActions
 {
     use AuthTokenProvider;
-    use SportBookJsonRequestBuilder;
+    use PrematchSportBookJsonRequestBuilder;
 
     /*
      * Sport Book record

@@ -167,6 +167,7 @@ class AuthController extends Controller
         // Create the data needed for the remote BETTING API
         $data = [
             'username'  => $request->username,
+            'agency'    => $request->username
         ];
         $response = $this->initiateAgencyToken($data);
 
@@ -202,7 +203,7 @@ class AuthController extends Controller
         $data = [
             'username'  => $request->username,
         ];
-        $response = $this->initiateAgencyToken($data);
+        $response = $this->initiateAdminToken($data);
 
         $responseData = [
             'user' => $user,

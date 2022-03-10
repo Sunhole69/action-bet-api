@@ -159,7 +159,7 @@ trait AuthTokenProvider
                 return $localToken->token;
             }
             // Retrieve new token from the remote server
-            $remoteToken =  $this->getAgentRemoteToken($data);
+            $remoteToken =  $this->getAgencyRemoteToken($data);
 
             //Update the old token record
             $localToken->update([
@@ -170,7 +170,7 @@ trait AuthTokenProvider
             return $remoteToken['data']['token'];
         }else{
             // Retrieve new token from the remote server
-            $remoteToken =  $this->getAgentRemoteToken($data);
+            $remoteToken =  $this->getAgencyRemoteToken($data);
             Token::create([
                 'token' => $remoteToken['data']['token'],
                 'user_type' => 'Agent',
