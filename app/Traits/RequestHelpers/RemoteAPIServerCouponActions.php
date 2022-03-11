@@ -11,14 +11,16 @@ trait RemoteAPIServerCouponActions
 {
     use CouponJsonRequestBuilder;
     use AuthTokenProvider;
-    /*
-     * Player Authentication methods
-     */
-    private function getAgencyDefaultCouponBonus(){
 
-        // Initiate the player account creation with the admin token
+    private function getAgencyDefaultCouponBonus(){
         $data['action'] = 'default_coupon_bonus';
         $jsonData = $this->buildAgencyDefaultCouponData($data);
+        return $this->send($this->url, $jsonData);
+    }
+
+    private function getUserCouponBonus($data){
+        $data['action'] = 'user_coupon_bonus';
+        $jsonData = $this->buildUserCouponBonusData($data);
         return $this->send($this->url, $jsonData);
     }
 }

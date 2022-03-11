@@ -24,5 +24,17 @@ trait CouponJsonRequestBuilder
 
     }
 
+    public function buildUserCouponBonusData ($data) {
+        $dataBuild = [
+            'partner' => $this->ABX_API_PARTNER,
+            'secretkey' => $this->ABX_API_SECRETE_KEY,
+            'action' => $data['action'],
+            'token'  => $data['token']
+        ];
+
+        return json_encode($dataBuild);
+
+    }
+
 
 }
