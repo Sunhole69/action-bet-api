@@ -80,10 +80,12 @@ Route::group(['middleware' => ['token-check']], function () {
     Route::get('/sport-book/live/odds',                      [LiveSportBookController::class, 'fetchLiveOddsStructure']);
 
 
-
     // Coupon and betting
     Route::get('/coupon/agency-default',                      [CouponController::class, 'defaultAgencyCoupon']);
     Route::get('/coupon/user-bonus',                          [CouponController::class, 'userCouponBonus']);
+
+
+
 
 });
 

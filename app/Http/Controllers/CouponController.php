@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Token;
 use App\Traits\AuthHelpers\AuthUserManager;
 use App\Traits\RequestHelpers\APIResponse;
 use App\Traits\RequestHelpers\RemoteAPIServerCouponActions;
@@ -13,10 +14,12 @@ class CouponController extends Controller
     use AuthUserManager;
     use RemoteAPIServerCouponActions;
     public $user;
+    public $token;
 
     public function __construct(Request $request)
     {
-        $this->user = $this->getCurrentUser($request);
+        $this->user  = $this->getCurrentUser($request);
+        $this->token = Token::where('username', $this->user->username)->first()->token
     }
 
     public function defaultAgencyCoupon(){
@@ -43,6 +46,14 @@ class CouponController extends Controller
         $response = $this->getUserCouponBonus($data);
         return $this->successResponse($response, 200);
     }
+
+    public function playCoupon(){
+
+
+
+    }
+
+
 
 
 }

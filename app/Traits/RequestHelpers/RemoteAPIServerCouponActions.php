@@ -23,4 +23,5 @@ trait RemoteAPIServerCouponActions
         $jsonData = $this->buildUserCouponBonusData($data);
         return $this->send($this->url, $jsonData);
     }
+
 }

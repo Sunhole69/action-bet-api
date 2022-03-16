@@ -13,8 +13,29 @@ trait AuthUserManager
     public function getCurrentUser(Request $request)
     {
        $token =  Token::where('token', $request->bearerToken())->first();
+
        if ($token){
-          return User::where('username', $token->username)->first();
+           // Check if the token is still valid and update it
+           $user = User::where('username', $token->username)->first();
+           $data = [
+               'username'  => $user->username,
+               'user_type' => $user->user_type
+           ];
+
+           //Determine the authentication path through the user_type
+           if (ucwords($data['user_type']) === 'Player'){
+               $response = $this->initiatePlayerToken($data);
+           }
+
+           if (ucwords($data['user_type']) === 'Agency'){
+               $response = $this->initiateAgencyToken($data);
+           }
+
+           if (ucwords($data['user_type']) === 'Admin'){
+               $response = $this->initiateAdminToken($data);
+           }
+
+          return $user;
        }
        return false;
     }
