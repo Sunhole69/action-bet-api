@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 
 trait AuthUserManager
 {
+
+    use AuthTokenProvider;
     public function getCurrentUser(Request $request)
     {
        $token =  Token::where('token', $request->bearerToken())->first();

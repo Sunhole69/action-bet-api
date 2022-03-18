@@ -19,7 +19,7 @@ class CouponController extends Controller
     public function __construct(Request $request)
     {
         $this->user  = $this->getCurrentUser($request);
-        $this->token = Token::where('username', $this->user->username)->first()->token
+        $this->token = Token::where('username', $this->user->username)->first()->token;
     }
 
     public function defaultAgencyCoupon(){
@@ -47,10 +47,41 @@ class CouponController extends Controller
         return $this->successResponse($response, 200);
     }
 
-    public function playCoupon(){
+    public function playCouponSingle(Request $request){
+        $request->validate([
+            'amount'       => 'required|numeric',
+            'search_code'  => 'required|string',
+            'sign_key'     => 'required|string',
+            'rank'         => 'required|string|max:255|unique:users,username',
+        ]);
+
+        $data['username']     = $this->user->username;
+        $data['amount']       = $request->amount;
+        $data['search_code']  = $request->search_code;
+        $data['sign_key']     = $request->sign_key;
+        $data['rank']         = $request->rank;
+        $data['token']        = $this->token;
+        $response = $this->playCouponSingleSetup($data);
+        return $this->successResponse($response, 200);
+    }
 
 
+    public function playCouponMultiple(Request $request){
+        $request->validate([
+            'amount'       => 'required|numeric',
+            'search_code'  => 'required|string',
+            'sign_key'     => 'required|string',
+            'rank'         => 'required|string|max:255|unique:users,username',
+        ]);
 
+        $data['username']     = $this->user->username;
+        $data['amount']       = $request->amount;
+        $data['search_code']  = $request->search_code;
+        $data['sign_key']     = $request->sign_key;
+        $data['rank']         = $request->rank;
+        $data['token']        = $this->token;
+        $response = $this->playCouponMultipleSetup($data);
+        return $this->successResponse($response, 200);
     }
 
 

@@ -83,7 +83,8 @@ Route::group(['middleware' => ['token-check']], function () {
     // Coupon and betting
     Route::get('/coupon/agency-default',                      [CouponController::class, 'defaultAgencyCoupon']);
     Route::get('/coupon/user-bonus',                          [CouponController::class, 'userCouponBonus']);
-
+    Route::post('/coupon/play-coupon-single',                 [CouponController::class, 'playCouponSingle']);
+    Route::post('/coupon/play-coupon-multiple',               [CouponController::class, 'playCouponMultiple']);
 
 
 

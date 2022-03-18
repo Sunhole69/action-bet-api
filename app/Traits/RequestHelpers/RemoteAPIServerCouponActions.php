@@ -10,7 +10,7 @@ use App\Traits\JsonBuilders\CouponJsonRequestBuilder;
 trait RemoteAPIServerCouponActions
 {
     use CouponJsonRequestBuilder;
-    use AuthTokenProvider;
+//    use AuthTokenProvider;
 
     private function getAgencyDefaultCouponBonus(){
         $data['action'] = 'default_coupon_bonus';
@@ -21,6 +21,18 @@ trait RemoteAPIServerCouponActions
     private function getUserCouponBonus($data){
         $data['action'] = 'user_coupon_bonus';
         $jsonData = $this->buildUserCouponBonusData($data);
+        return $this->send($this->url, $jsonData);
+    }
+
+    private function playCouponSingleSetup($data){
+        $data['action'] = 'play_coupon';
+        $jsonData = $this->buildPlayCouponSingleData($data);
+        return $this->send($this->url, $jsonData);
+    }
+
+    private function playCouponMultipleSetup($data){
+        $data['action'] = 'play_coupon';
+        $jsonData = $this->buildPlayCouponMultipleData($data);
         return $this->send($this->url, $jsonData);
     }
 
