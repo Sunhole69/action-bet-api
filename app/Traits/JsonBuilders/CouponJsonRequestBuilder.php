@@ -36,7 +36,33 @@ trait CouponJsonRequestBuilder
 
     }
 
-    public function buildPlayCouponSingleData ($data) {
+    public function buildPlayerPlayCouponSingleData ($data) {
+        $dataBuild = [
+            'partner' => $this->ABX_API_PARTNER,
+            'secretkey' => $this->ABX_API_SECRETE_KEY,
+            'action' => $data['action'],
+            'token'  => $data['token'],
+            'data'   => [
+//                'username'             => $data['username'],
+//                'rechargeAndBet'       => true,
+                'type'                 => 'single',
+                'amount'               => $data['amount'],
+                'acceptOddChanges' => true,
+                'odds'                 => [
+                    [
+                        'search_code' => $data['search_code'],
+                        'sign'        => $data['sign_key'],
+                        'rank'        => $data['rank']
+                    ]
+                ]
+            ]
+        ];
+
+        return json_encode($dataBuild);
+
+    }
+
+    public function buildAgencyPlayCouponSingleData ($data) {
         $dataBuild = [
             'partner' => $this->ABX_API_PARTNER,
             'secretkey' => $this->ABX_API_SECRETE_KEY,
@@ -47,11 +73,11 @@ trait CouponJsonRequestBuilder
                 'rechargeAndBet'       => true,
                 'type'                 => 'single',
                 'amount'               => $data['amount'],
-                'acceptableOddChanges' => true,
+                'acceptOddChanges'     => true,
                 'odds'                 => [
                     [
                         'search_code' => $data['search_code'],
-                        'sign_key'    => $data['sign_key'],
+                        'sign'        => $data['sign_key'],
                         'rank'        => $data['rank']
                     ]
                 ]
@@ -61,6 +87,7 @@ trait CouponJsonRequestBuilder
         return json_encode($dataBuild);
 
     }
+
 
     public function buildPlayCouponMultipleData ($data) {
         $dataBuild = [

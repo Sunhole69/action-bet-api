@@ -49,20 +49,20 @@ trait AuthTokenProvider
      * User Authentication methods
      */
     private function initiateAdminToken($data){
-        $data['user_type'] = 'Admin';
+        $data['user_type'] = 'admin';
         $data['username']  = $this->ABX_API_BO_USERNAME;
         $data['action'] = 'authenticate';
         return $this->fetchUserToken($data);
     }
 
     private function initiateAgencyToken($data){
-        $data['user_type'] = 'Agency';
+        $data['user_type'] = 'agency';
         $data['action'] = 'authenticate';
         return $this->fetchAgencyToken($data);
     }
 
     private function initiatePlayerToken($data){
-        $data['user_type'] = 'Player';
+        $data['user_type'] = 'player';
         $data['action'] = 'authenticate';
         return $this->fetchUserToken($data);
     }
@@ -188,15 +188,16 @@ trait AuthTokenProvider
     }
 
 
-
     /*
      * Common authentication utility methods
      */
     private function checkTokenValidity($token){
         // If local token is still valid i.e not expired due to time factor(8min max)
-        if (Carbon::now()->subMinutes(8) >= $token->updated_at){
+        if (Carbon::now()->subMinutes(8) > $token->updated_at){
             return false;
         }
+        $token->updated_at = Carbon::now()->addMinutes(8);
+        $token->save();
         return true;
     }
 

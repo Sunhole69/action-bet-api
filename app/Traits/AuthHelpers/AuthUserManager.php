@@ -25,15 +25,15 @@ trait AuthUserManager
            ];
 
            //Determine the authentication path through the user_type
-           if (ucwords($data['user_type']) === 'Player'){
+           if (ucwords($data['user_type']) === 'player'){
                $response = $this->initiatePlayerToken($data);
            }
 
-           if (ucwords($data['user_type']) === 'Agency'){
+           if (ucwords($data['user_type']) === 'agency'){
                $response = $this->initiateAgencyToken($data);
            }
 
-           if (ucwords($data['user_type']) === 'Admin'){
+           if (ucwords($data['user_type']) === 'admin'){
                $response = $this->initiateAdminToken($data);
            }
 

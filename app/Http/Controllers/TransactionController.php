@@ -36,15 +36,15 @@ class TransactionController extends Controller
             'username'   => $this->user->username,
             'user_type' => $this->user->user_type
         ];
-        // Trigger payment gateway here
-        $gatewayResponse = $this->initiatePaymentGateway();
-        if ($gatewayResponse->errorResponse == "FAIL"){
-            return $this->errorResponse($gatewayResponse, 422);
-        }
+//        // Trigger payment gateway here
+//        $gatewayResponse = $this->initiatePaymentGateway();
+//        if ($gatewayResponse->errorResponse == "FAIL"){
+//            return $this->errorResponse($gatewayResponse, 422);
+//        }
 
         // Credit user account
         $creditUserResponse = $this->creditUser($data);
-        if ($creditUserResponse->errorResponse === "SUCCESS"){
+        if ($creditUserResponse['errorCode'] === "SUCCESS"){
             //Finally return the server response if fails
             return $this->successResponse($creditUserResponse, 200);
         }
@@ -83,6 +83,7 @@ class TransactionController extends Controller
     }
 
     public function creditUser($data){
+        $data['agency'] = $this->user->username;
         //Initiate remotely, if successful, update locally
         $response = $this->initiateRemoteTransaction($data);
 

@@ -9,7 +9,6 @@ use App\Traits\JsonBuilders\TransactionJsonRequestBuilder;
 
 trait RemoteAPIServerTransactionActions
 {
-    use AuthTokenProvider;
     use TransactionJsonRequestBuilder;
 
     /*
@@ -17,10 +16,10 @@ trait RemoteAPIServerTransactionActions
      */
     private function initiateRemoteTransaction($data){
         // Get the admin token and send along the request
-        if ($data['user_type'] === 'Player') {
+        if ($data['user_type'] === 'player') {
             $data['token'] = $this->initiatePlayerToken($data);
         }
-        if ($data['user_type'] === 'Agency') {
+        if ($data['user_type'] === 'agency') {
             $data['token'] = $this->initiateAgencyToken($data);
         }
 

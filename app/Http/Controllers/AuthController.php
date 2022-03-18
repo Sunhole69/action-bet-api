@@ -33,7 +33,7 @@ class AuthController extends Controller
             'email'     => $request->email,
             'username'  => $request->username,
             'password'  => $request->password,
-            'role'      => 'player',
+            'role'      => 'agency',
             'enabled'   => true,
         ];
 
@@ -41,7 +41,19 @@ class AuthController extends Controller
 
         // If successful, save the user details into local database
         if ($response['errorCode'] === "SUCCESS"){
-            User::create($request->all());
+            $regData = $request->all();
+            $regData['user_type'] = 'agency';
+            User::create($regData);
+        }
+
+        // If successful, save the user details into local database
+        if ($response['errorCode'] === "SUCCESS"){
+            $user =  User::create($data);
+            Wallet::create([
+                'user_id' => $user->id,
+                'balance'  => 0,
+                'bonus'   => 0
+            ]);
         }
 
         //4. Return response to user along with cookie for authentication
