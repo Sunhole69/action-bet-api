@@ -74,9 +74,9 @@ trait AuthTokenProvider
         $localToken = Token::where('username', $data['username'])->first();
         if($localToken){
             // Check if the token is still valid
-            if ($this->checkTokenValidity($localToken)){
-               return $localToken->token;
-            }
+//            if ($this->checkTokenValidity($localToken)){
+//               return $localToken->token;
+//            }
             // Retrieve new token from the remote server
             $remoteToken =  $this->getUserRemoteToken($data);
 

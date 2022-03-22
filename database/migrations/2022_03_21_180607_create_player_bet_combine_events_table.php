@@ -13,18 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('player_bets', function (Blueprint $table) {
+        Schema::create('player_bet_combine_events', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users'); //Player user_id
-
+            $table->foreignId('player_bet_combines_id')->constrained('player_bet_combines');
             $table->string('search_code');
             $table->string('sign_key');
             $table->double('rank');
-
-            $table->enum('bet_type', ['single', 'multiple', 'split', 'combined']);
-            $table->bigInteger('amount');
-            $table->bigInteger('coupon_id')->nullable();
-            $table->string('status')->default('charged');
             $table->timestamps();
         });
     }
@@ -36,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('player_bets');
+        Schema::dropIfExists('player_bet_combine_events');
     }
 };

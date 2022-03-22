@@ -86,11 +86,10 @@ Route::group(['middleware' => ['token-check']], function () {
     Route::post('/coupon/player/play-coupon-single',          [CouponController::class, 'playerPlayCouponSingle']);
     Route::post('/coupon/agency/play-coupon-single',          [CouponController::class, 'agencyPlayCouponSingle']);
 
-    Route::post('/coupon/player/play-coupon-multiple',        [CouponController::class, 'playerPlayCouponSingle']);
-    Route::post('/coupon/agency/play-coupon-multiple',        [CouponController::class, 'agencyPlayCouponSingle']);
-
+    Route::post('/coupon/player/play-coupon-multiple',        [CouponController::class, 'playerPlayCouponMultipleAndSplit']);
+    Route::post('/coupon/player/play-coupon-split',           [CouponController::class, 'playerPlayCouponMultipleAndSplit']);
+    Route::post('/coupon/player/play-coupon-combined',        [CouponController::class, 'playerPlayCouponCombined']);
     Route::post('/coupon/play-coupon-multiple',               [CouponController::class, 'playCouponMultiple']);
-
 
 
 

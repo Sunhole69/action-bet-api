@@ -89,19 +89,17 @@ trait CouponJsonRequestBuilder
     }
 
 
-    public function buildPlayCouponMultipleData ($data) {
+    public function buildPlayerPlayCouponMultipleAndSplitData ($data) {
         $dataBuild = [
             'partner' => $this->ABX_API_PARTNER,
             'secretkey' => $this->ABX_API_SECRETE_KEY,
             'action' => $data['action'],
             'token'  => $data['token'],
             'data'   => [
-                'username'             => $data['username'],
-                'rechargeAndBet'       => true,
-                'type'                 => 'multiple',
+                'type'                 => $data['type'],
                 'amount'               => $data['amount'],
-                'acceptableOddChanges' => true,
-                'odds'                 => $this->multipleOddsStructure($data['games'])
+                'acceptOddChanges' => true,
+                'odds'                 => $data['events']
             ]
         ];
 
@@ -109,16 +107,22 @@ trait CouponJsonRequestBuilder
     }
 
 
-    public function multipleOddsStructure($games){
-        $odds = [];
-        foreach ($games as $game){
-            array_push($odds, [
-                'search_code' => $game['search_code'],
-                'sign_key'    => $game['sign_key'],
-                'rank'        => $game['rank']
-            ]);
-        }
+    public function buildPlayerPlayCouponCombinedData ($data) {
+        $dataBuild = [
+            'partner' => $this->ABX_API_PARTNER,
+            'secretkey' => $this->ABX_API_SECRETE_KEY,
+            'action' => $data['action'],
+            'token'  => $data['token'],
+            'data'   => [
+                'type'                    => $data['type'],
+                'amount'                  => $data['amount'],
+                'acceptOddChanges'        => true,
+                'odds'                    => $data['events'],
+                'amounts'                 => $data['amounts']
+            ]
+        ];
 
-        return $odds;
+        return json_encode($dataBuild);
     }
+
 }

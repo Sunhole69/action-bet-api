@@ -23,10 +23,6 @@ trait RemoteAPIServerCouponActions
         return $this->send($this->url, $jsonData);
     }
 
-
-
-
-
     private function playerPlayCouponSingleSetup($data){
         $data['action'] = 'play_coupon';
         $jsonData = $this->buildPlayerPlayCouponSingleData($data);
@@ -39,9 +35,17 @@ trait RemoteAPIServerCouponActions
         return $this->send($this->url, $jsonData);
     }
 
-    private function playCouponMultipleSetup($data){
+    private function playCouponMultipleAndSplitSetup($data){
         $data['action'] = 'play_coupon';
-        $jsonData = $this->buildPlayCouponMultipleData($data);
+        if ($data['type'] === 'multiple' || $data['type'] === 'split'){
+            $jsonData = $this->buildPlayerPlayCouponMultipleAndSplitData($data);
+        }
+        return $this->send($this->url, $jsonData);
+    }
+
+    private function playerPlayCouponCombinedSetup($data){
+        $data['action'] = 'play_coupon';
+        $jsonData = $this->buildPlayerPlayCouponCombinedData($data);
         return $this->send($this->url, $jsonData);
     }
 

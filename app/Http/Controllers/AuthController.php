@@ -134,15 +134,15 @@ class AuthController extends Controller
         ];
 
         //Determine the authentication path through the user_type
-        if (ucwords($data['user_type']) === 'Player'){
+        if ($data['user_type'] === 'player'){
             $response = $this->initiatePlayerToken($data);
         }
 
-        if (ucwords($data['user_type']) === 'Agency'){
+        if ($data['user_type'] === 'agency'){
             $response = $this->initiateAgencyToken($data);
         }
 
-        if (ucwords($data['user_type']) === 'Admin'){
+        if ($data['user_type'] === 'admin'){
             $response = $this->initiateAdminToken($data);
         }
 

@@ -16,10 +16,16 @@ return new class extends Migration
         Schema::create('agency_bets', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users'); //Agency user_id
+
+            $table->string('search_code');
+            $table->string('sign_key');
+            $table->double('rank');
+
             $table->string('player_username');
             $table->enum('bet_type', ['single', 'multiple', 'split', 'combined']);
             $table->bigInteger('amount');
-            $table->enum('status', ['lost', 'won', 'rejected', 'placed'])->default('placed');
+            $table->bigInteger('coupon_id')->nullable();
+            $table->string('status')->default('charged');
             $table->timestamps();
         });
     }
