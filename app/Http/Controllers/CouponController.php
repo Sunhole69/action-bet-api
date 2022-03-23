@@ -60,7 +60,6 @@ class CouponController extends Controller
     }
 
 
-
     public function playerPlayCouponSingle(Request $request){
         $request->validate([
             'amount'       => 'required|numeric',
@@ -274,7 +273,6 @@ class CouponController extends Controller
         return $this->successResponse($response, 200);
     }
 
-
     public function AgencyPlayCouponSingle(Request $request){
         $request->validate([
             'amount'              => 'required|numeric',
@@ -337,6 +335,109 @@ class CouponController extends Controller
 
         return $this->successResponse($response, 200);
     }
+
+    public function getPlayerCoupons(Request $request){
+        $request->validate([
+            'page'        => 'required|numeric',
+            'date_from'   => 'required|date_format:Y-m-d|before_or_equal:today',
+            'date_to'     => 'required|date_format:Y-m-d|before_or_equal:today|after_or_equal:date_from',
+        ]);
+
+        $data = [
+            'page'      => $request->page,
+            'username'  => $this->user->username,
+            'user_type' => $this->user->user_type,
+            'dateFrom'  => $request->date_from,
+            'dateTo'    => $request->date_to,
+            'timezone'  => 'Africa/Lagos'
+        ];
+
+        if (ucwords($data['user_type']) === 'Player'){
+            $token = $this->initiatePlayerToken($data);
+        }
+
+        if (ucwords($data['user_type']) === 'Agency'){
+            $token = $this->initiateAgencyToken($data);
+        }
+
+        $data['token'] = $token;
+        $response = $this->playerGetCouponsSetup($data);
+        return $this->successResponse($response, 200);
+    }
+
+    public function showPlayerCoupon(Request $request){
+        $request->validate([
+            'coupon_id'        => 'required|numeric',
+        ]);
+
+        $data = [
+            'username'  => $this->user->username,
+            'user_type' => $this->user->user_type,
+            'timezone'  => 'Africa/Lagos',
+            'lang'      => 'EN',
+            'coupon_id'  => $request->coupon_id,
+        ];
+
+        if (ucwords($data['user_type']) === 'Player'){
+            $token = $this->initiatePlayerToken($data);
+        }
+
+        if (ucwords($data['user_type']) === 'Agency'){
+            $token = $this->initiateAgencyToken($data);
+        }
+
+        $data['token'] = $token;
+        $response = $this->playerShowCouponsSetup($data);
+        return $this->successResponse($response, 200);
+    }
+
+    public function playerCashOutList(Request $request){
+        $data = [
+            'username'  => $this->user->username,
+            'user_type' => $this->user->user_type,
+        ];
+
+        if (ucwords($data['user_type']) === 'Player'){
+            $token = $this->initiatePlayerToken($data);
+        }
+
+        if (ucwords($data['user_type']) === 'Agency'){
+            $token = $this->initiateAgencyToken($data);
+        }
+
+        $data['token'] = $token;
+        $response = $this->playerCouponsCashoutListSetup($data);
+        return $this->successResponse($response, 200);
+    }
+
+    public function playerDoCashOut(Request $request){
+        $request->validate([
+            'coupon_id'        => 'required|numeric',
+            'cashout_amount'   => 'required|numeric'
+        ]);
+
+        $data = [
+            'username'         => $this->user->username,
+            'user_type'        => $this->user->user_type,
+            'coupon_id'        => $request->coupon_id,
+            'cashout_amount'   => $request->cashout_amount
+        ];
+
+        if (ucwords($data['user_type']) === 'Player'){
+            $token = $this->initiatePlayerToken($data);
+        }
+
+        if (ucwords($data['user_type']) === 'Agency'){
+            $token = $this->initiateAgencyToken($data);
+        }
+
+        $data['token'] = $token;
+        $response = $this->playerDoCouponsCashoutSetup($data);
+        return $this->successResponse($response, 200);
+    }
+
+
+
 
     public function checkUserWallet ($amount){
         //Check player wallet before placing bet

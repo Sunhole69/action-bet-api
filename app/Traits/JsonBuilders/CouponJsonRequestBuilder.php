@@ -125,4 +125,72 @@ trait CouponJsonRequestBuilder
         return json_encode($dataBuild);
     }
 
+
+    public function buildPlayerGetCouponsData ($data) {
+        $dateFrom = $data['dateFrom'];
+        $dateTo = $data['dateTo'];
+
+        $dataBuild = [
+            'partner' => $this->ABX_API_PARTNER,
+            'secretkey' => $this->ABX_API_SECRETE_KEY,
+            'action' => $data['action'],
+            'token'  => $data['token'],
+            'data'   => [
+                'username'                => $data['username'],
+                'timezone'                => $data['timezone'],
+                'dateFrom'               => "$dateFrom 00:00:00",
+                'dateTo'                 => "$dateTo 23:59:59",
+                'page'                    => $data['page'],
+            ]
+        ];
+
+        return json_encode($dataBuild);
+    }
+
+
+    public function buildPlayerShowCouponsData ($data) {
+
+        $dataBuild = [
+            'partner' => $this->ABX_API_PARTNER,
+            'secretkey' => $this->ABX_API_SECRETE_KEY,
+            'action' => $data['action'],
+            'token'  => $data['token'],
+            'data'   => [
+                'username'                => $data['username'],
+                'timezone'                => $data['timezone'],
+                'lang'                    => $data['lang'],
+                'coupon_id'               => $data['coupon_id'],
+            ]
+        ];
+        return json_encode($dataBuild);
+    }
+
+    public function buildPlayerCouponsCashoutList ($data) {
+
+        $dataBuild = [
+            'partner' => $this->ABX_API_PARTNER,
+            'secretkey' => $this->ABX_API_SECRETE_KEY,
+            'action' => $data['action'],
+            'token'  => $data['token'],
+        ];
+        return json_encode($dataBuild);
+    }
+
+
+    public function buildPlayerDoCouponCashout($data) {
+
+        $dataBuild = [
+            'partner' => $this->ABX_API_PARTNER,
+            'secretkey' => $this->ABX_API_SECRETE_KEY,
+            'action' => $data['action'],
+            'token'  => $data['token'],
+            'data'   => [
+                'coupon_id'      => $data['coupon_id'],
+                'cashout_amount' => $data['cashout_amount']
+            ]
+        ];
+        return json_encode($dataBuild);
+    }
+
+
 }

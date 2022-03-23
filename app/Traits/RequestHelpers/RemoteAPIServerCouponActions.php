@@ -49,4 +49,28 @@ trait RemoteAPIServerCouponActions
         return $this->send($this->url, $jsonData);
     }
 
+    private function playerGetCouponsSetup($data){
+        $data['action'] = 'get_transactions';
+        $jsonData = $this->buildPlayerGetCouponsData($data);
+        return $this->send($this->url, $jsonData);
+    }
+
+    private function playerShowCouponsSetup($data){
+        $data['action'] = 'coupon_info';
+        $jsonData = $this->buildPlayerShowCouponsData($data);
+        return $this->send($this->url, $jsonData);
+    }
+
+    private function playerCouponsCashoutListSetup($data){
+        $data['action'] = 'cashout_list';
+        $jsonData = $this->buildPlayerCouponsCashoutList($data);
+        return $this->send($this->url, $jsonData);
+    }
+
+    private function playerDoCouponsCashoutSetup($data){
+        $data['action'] = 'do_cashout';
+        $jsonData = $this->buildPlayerDoCouponCashout($data);
+        return $this->send($this->url, $jsonData);
+    }
+
 }
