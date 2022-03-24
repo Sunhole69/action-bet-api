@@ -4,6 +4,7 @@ use App\Http\Controllers\AntePostSportBookController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\LiveSportBookController;
+use App\Http\Controllers\PadiWinController;
 use App\Http\Controllers\PrematchSportBookController;
 use App\Http\Controllers\SpecialSportBookController;
 use App\Http\Controllers\TransactionController;
@@ -33,6 +34,7 @@ Route::patch('/user/update-status/{user_id}',              [UserController::clas
 Route::post('/sign-in',                                     [AuthController::class, 'login']);
 Route::post('/sign-up',                                     [AuthController::class, 'signUp']);
 Route::post('/agency/sign-up',                              [AuthController::class, 'registerAffiliate']);
+Route::post('/padiwin/sign-up/{ref_id}',                   [AuthController::class,    'signUpReferredUser']);
 
 // Protected routes
 Route::group(['middleware' => ['token-check']], function () {
@@ -93,8 +95,14 @@ Route::group(['middleware' => ['token-check']], function () {
     Route::post('/coupon/player/show-coupon',                 [CouponController::class, 'showPlayerCoupon']);
 
     // Cashout
-    Route::get('/coupon/player/cashout-list',                [CouponController::class, 'playerCashOutList']);
+    Route::get('/coupon/player/cashout-list',                 [CouponController::class, 'playerCashOutList']);
     Route::post('/coupon/player/do-cashout',                  [CouponController::class, 'playerDoCashOut']);
+
+
+    //PadiWin
+    Route::post('/padiwin/create-link',                       [PadiWinController::class, 'createPadiWinUserLink']);
+    Route::get('/padiwin/get-my-link',                        [PadiWinController::class, 'generateMyLink']);
+
 
 });
 

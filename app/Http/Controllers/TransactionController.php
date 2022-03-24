@@ -49,6 +49,17 @@ class TransactionController extends Controller
             return $this->successResponse($creditUserResponse, 200);
         }
 
+        // Credit the referrer 10% of the deposit
+        if ($this->user->referred){
+            $percentage = 10;
+            $totalDeposit = 350;
+            $ten_percent = ($percentage / 100) * $totalDeposit;
+
+           $refWallet = Wallet::where('user_id', $this->user->referrer_id)->first();
+           $refWallet->padi_win_bonus = $refWallet->padi_win_bonus + $ten_percent;
+           $refWallet->save();
+        }
+
         //Finally return the server response if fails
         return $this->errorResponse($creditUserResponse, 400);
 

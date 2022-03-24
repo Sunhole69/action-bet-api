@@ -24,6 +24,8 @@ return new class extends Migration
             $table->enum('user_type', ['player', 'agency', 'admin']);
             $table->string('agency')->nullable(); // If user is a player
             $table->string('password');
+            $table->boolean('referred')->default(false);
+            $table->bigInteger('referrer_id')->nullable();
             $table->boolean('enabled')->default(true);
             $table->rememberToken();
             $table->timestamps();

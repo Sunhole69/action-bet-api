@@ -13,12 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('wallets', function (Blueprint $table) {
+        Schema::create('padi_win_users', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            $table->bigInteger('balance')->default(0);
-            $table->bigInteger('bonus')->nullable()->default(0);
-            $table->bigInteger('padi_win_bonus')->default(0);
+            $table->string('user_ref_id', 500);
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('wallets');
+        Schema::dropIfExists('padi_win_users');
     }
 };

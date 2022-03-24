@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PadiWinUser;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Traits\RequestHelpers\APIResponse;
@@ -107,6 +108,69 @@ class AuthController extends Controller
         // Return response to user
         return $this->successResponse($response,200);
     }
+
+    public function signUpReferredUser(Request $request, $user_ref_id){
+        // Find referer
+        $refUser = PadiWinUser::where('user_ref_id', $user_ref_id)->first();
+        if (!$refUser){
+            return $this->errorResponse([
+                'errorCode' => 'PADIWIN_ACCOUNT_ERROR',
+                'message'   => 'Invalid padiwin referrer link'
+            ], 404);
+        }
+
+        //1. Validating user inputs
+        $request->validate([
+            'firstname' => 'required|string|max:255',
+            'lastname'  => 'required|string|max:255',
+            'agency'    => 'required|string|max:255',
+            'username'  => 'required|string|max:255|unique:users,username',
+            'phone'     => 'required|string|unique:users,phone',
+            'email'     => 'required|string|unique:users,email',
+            'password'  => 'required|string|confirmed'
+        ]);
+
+
+        // Check if agency exist
+        if (!User::where('username', $request->agency)->first()){
+            return $this->errorResponse([
+                'errorCode' => 'AGENCY_ERROR',
+                'message' => 'Agency doesn\'t exist'
+            ], 422);
+        }
+
+        // Create the data needed for the remote BETTING API
+        $data = [
+            'firstname'       => $request->firstname,
+            'lastname'        => $request->lastname,
+            'phone'           => $request->phone,
+            'email'           => $request->email,
+            'username'        => $request->username,
+            'password'        => $request->password,
+            'agency'          => $request->agency,
+            'referred'        => true,
+            'referrer_id'     => $refUser->user_id,
+            'user_type'       => 'Player',
+            'enabled'         => true,
+        ];
+        // Drop the user details with the remote BETTING API
+        $response = $this->registerPlayerRemotely($data);
+
+        // If successful, save the user details into local database
+        if ($response['errorCode'] === "SUCCESS"){
+            $user =  User::create($data);
+            Wallet::create([
+                'user_id'  => $user->id,
+                'balance'  => 0,
+                'bonus'    => 0
+            ]);
+
+        }
+
+        // Return response to user
+        return $this->successResponse($response,200);
+    }
+
 
     public function login(Request $request){
         //1. Validating user inputs

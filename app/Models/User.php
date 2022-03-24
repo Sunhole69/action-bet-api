@@ -28,7 +28,9 @@ class User extends Authenticatable
         'password',
         'agency',
         'user_type',
-        'enabled'
+        'enabled',
+        'referred',
+        'referrer_id',
     ];
 
     /**
@@ -56,6 +58,10 @@ class User extends Authenticatable
 
     public function wallet(){
         return $this->hasOne(Wallet::class);
+    }
+
+    public function padiWin(){
+        return $this->hasOne(PadiWinUser::class);
     }
 
     public function transactions(){

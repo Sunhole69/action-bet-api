@@ -14,5 +14,5 @@ trait RemoteAPIServerCredentials
 
     private string $ABX_API_BO_USERNAME='opactionbet';
     private string $ABX_API_BO_PASSWORD='554411Ff';
-    private string $ABX_API_AGENT_USERNAME='actionbetagent';
+    private string $ABX_API_AGENT_USERNAME='telvida';
 }
