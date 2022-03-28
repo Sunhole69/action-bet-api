@@ -39,6 +39,7 @@ trait AuthUserManager
 
           return $user;
        }
+
        return false;
     }
 

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PadiWinControl;
+use App\Models\PadiWinUser;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Wallet;
@@ -36,6 +38,16 @@ class TransactionController extends Controller
             'username'   => $this->user->username,
             'user_type' => $this->user->user_type
         ];
+
+        // Check if the Parent agency has enough credit
+        $agency = User::where('user_type', 'agency')->where('username', $this->user->agency)->first();
+        if ($agency->wallet->balance < $request->amount){
+            return $this->errorResponse([
+                'errorCode' => 'TRANSACTION_ERROR',
+                'message'   => 'Agency does not have enough balance'
+            ], 409);
+        }
+
 //        // Trigger payment gateway here
 //        $gatewayResponse = $this->initiatePaymentGateway();
 //        if ($gatewayResponse->errorResponse == "FAIL"){
@@ -45,20 +57,28 @@ class TransactionController extends Controller
         // Credit user account
         $creditUserResponse = $this->creditUser($data);
         if ($creditUserResponse['errorCode'] === "SUCCESS"){
+            // Credit the referrer 10% of the deposit
+            if ($this->user->referred){
+                $padiWinControl = PadiWinControl::first();
+                $percentage_cut = ($request->amount / 100 )* $padiWinControl->percentage_bonus;
+                 // Create a transaction for the referrer
+                Transaction::create([
+                    'user_id'      => $this->user->referrer_id,
+                    'payment_type' => 'Padiwin_bonus',
+                    'status'       => 'Success',
+                    'amount'       => $percentage_cut
+                ]);
+
+                // Update the wallet of the referrer
+                $refWallet = Wallet::where('user_id', $this->user->referrer_id)->first();
+                $refWallet->padi_win_bonus = $refWallet->padi_win_bonus + $percentage_cut;
+                $refWallet->save();
+            }
+
             //Finally return the server response if fails
             return $this->successResponse($creditUserResponse, 200);
         }
 
-        // Credit the referrer 10% of the deposit
-        if ($this->user->referred){
-            $percentage = 10;
-            $totalDeposit = 350;
-            $ten_percent = ($percentage / 100) * $totalDeposit;
-
-           $refWallet = Wallet::where('user_id', $this->user->referrer_id)->first();
-           $refWallet->padi_win_bonus = $refWallet->padi_win_bonus + $ten_percent;
-           $refWallet->save();
-        }
 
         //Finally return the server response if fails
         return $this->errorResponse($creditUserResponse, 400);
@@ -108,7 +128,6 @@ class TransactionController extends Controller
 
             //Update user wallet
             $this->user->wallet->update([
-                'user_id' => $this->user->id,
                 'balance'  => $this->user->wallet->balance +  $data['amount']
             ]);
 
@@ -119,13 +138,23 @@ class TransactionController extends Controller
                 'wallet' => $wallet
             ];
 
+
             // user_type is Player, then deduct from agency
-            Transaction::create([
-                'user_id' => $this->user->id,
-                'payment_type' => 'Deposit',
-                'status'    => ucwords($response['errorCode']),
-                'amount'    =>  $data['amount']
-            ]);
+            if ($this->user->user_type === 'player'){
+                $agency = User::where('user_type', 'agency')->where('username', $this->user->agency)->first();
+
+                Transaction::create([
+                    'user_id'      => $agency->id,
+                    'payment_type' => 'Player_credit',
+                    'status'       => ucwords($response['errorCode']),
+                    'amount'       =>  $data['amount']
+                ]);
+
+                $agency->wallet->update([
+                    'balance'  => $agency->wallet->balance -  $data['amount']
+                ]);
+
+            }
 
             //Finally return the server response
             return $transactionDetails;

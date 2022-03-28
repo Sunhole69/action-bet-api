@@ -61,6 +61,12 @@ trait RemoteAPIServerCouponActions
         return $this->send($this->url, $jsonData);
     }
 
+    private function playerCancelCouponSetup($data){
+        $data['action'] = 'cancel_coupon';
+        $jsonData = $this->buildPlayerCancelCoupon($data);
+        return $this->send($this->url, $jsonData);
+    }
+
     private function playerCouponsCashoutListSetup($data){
         $data['action'] = 'cashout_list';
         $jsonData = $this->buildPlayerCouponsCashoutList($data);

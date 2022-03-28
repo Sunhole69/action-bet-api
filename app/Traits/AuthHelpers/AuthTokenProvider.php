@@ -74,9 +74,9 @@ trait AuthTokenProvider
         $localToken = Token::where('username', $data['username'])->first();
         if($localToken){
             // Check if the token is still valid
-//            if ($this->checkTokenValidity($localToken)){
-//               return $localToken->token;
-//            }
+            if ($this->checkTokenValidity($localToken)){
+               return $localToken->token;
+            }
             // Retrieve new token from the remote server
             $remoteToken =  $this->getUserRemoteToken($data);
 
@@ -193,11 +193,11 @@ trait AuthTokenProvider
      */
     private function checkTokenValidity($token){
         // If local token is still valid i.e not expired due to time factor(8min max)
-        if (Carbon::now()->subMinutes(8) > $token->updated_at){
-            return false;
-        }
-        $token->updated_at = Carbon::now()->addMinutes(8);
-        $token->save();
+//        if (Carbon::now()->subMinutes(8) > $token->updated_at){
+//            return false;
+//        }
+//        $token->updated_at = Carbon::now()->addMinutes(8);
+//        $token->save();
         return true;
     }
 

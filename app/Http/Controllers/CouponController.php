@@ -391,6 +391,48 @@ class CouponController extends Controller
         return $this->successResponse($response, 200);
     }
 
+    public function cancelPlayerCoupon(Request $request){
+        $request->validate([
+            'coupon_id'        => 'required|numeric',
+        ]);
+
+        $data = [
+            'username'  => $this->user->username,
+            'user_type' => $this->user->user_type,
+            'timezone'  => 'Africa/Lagos',
+            'lang'      => 'EN',
+            'agency'    => $this->user->agency,
+            'coupon_id'  => $request->coupon_id,
+        ];
+
+        if ($data['user_type'] === 'player'){
+            $token = $this->initiatePlayerToken($data);
+        }
+
+        if ($data['user_type'] === 'agency'){
+            $token = $this->initiateAgencyToken($data);
+        }
+
+        $data['token'] = $token;
+        $response = $this->playerCancelCouponSetup($data);
+        if ($response["errorCode"] === "SUCCESS"){
+            // Credit the user back
+            //Check player wallet before placing bet
+//            $wallet = Wallet::where('user_id', $this->user->id)->first();
+//            if ($wallet->bonus >= $request->amount){
+//                $wallet->bonus = $wallet->bonus - $request->amount;
+//            } else {
+//                //Debit from their balance
+//                $wallet->balance = $wallet->balance - $request->amount;
+//            }
+//            $wallet->save();
+
+        }
+
+
+        return $this->successResponse($response, 200);
+    }
+
     public function playerCashOutList(Request $request){
         $data = [
             'username'  => $this->user->username,

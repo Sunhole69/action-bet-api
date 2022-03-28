@@ -93,6 +93,7 @@ Route::group(['middleware' => ['token-check']], function () {
 
     Route::post('/coupon/player/coupon-history',              [CouponController::class, 'getPlayerCoupons']);
     Route::post('/coupon/player/show-coupon',                 [CouponController::class, 'showPlayerCoupon']);
+    Route::post('/coupon/player/cancel-coupon',               [CouponController::class, 'cancelPlayerCoupon']);
 
     // Cashout
     Route::get('/coupon/player/cashout-list',                 [CouponController::class, 'playerCashOutList']);
@@ -102,6 +103,7 @@ Route::group(['middleware' => ['token-check']], function () {
     //PadiWin
     Route::post('/padiwin/create-link',                       [PadiWinController::class, 'createPadiWinUserLink']);
     Route::get('/padiwin/get-my-link',                        [PadiWinController::class, 'generateMyLink']);
+    Route::patch('/padiwin/update-control',                   [PadiWinController::class, 'updatePadiWinControl']);
 
 
 });

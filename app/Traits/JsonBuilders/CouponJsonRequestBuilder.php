@@ -193,4 +193,19 @@ trait CouponJsonRequestBuilder
     }
 
 
+    public function buildPlayerCancelCoupon($data) {
+
+        $dataBuild = [
+            'partner' => $this->ABX_API_PARTNER,
+            'secretkey' => $this->ABX_API_SECRETE_KEY,
+            'action' => $data['action'],
+            'token'  => $data['token'],
+            'data'   => [
+                'coupon_id'   => $data['coupon_id'],
+            ]
+        ];
+        return json_encode($dataBuild);
+    }
+
+
 }

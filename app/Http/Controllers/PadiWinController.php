@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PadiWinControl;
 use App\Models\PadiWinUser;
 use App\Models\Token;
 use App\Models\User;
@@ -66,7 +67,43 @@ class PadiWinController extends Controller
         ], 201);
     }
 
+    public function updatePadiWinControl(Request $request)
+    {
+        $request->validate([
+            'percentage_bonus' => 'nullable|numeric|min:1',
+            'available'        => 'nullable|in:1,0'
+        ]);
 
+       $padiControl = PadiWinControl::first();
+
+        $padiControl->fill($request->only([
+            'percentage_bonus',
+            'available',
+        ]));
+
+        if (!$padiControl->isDirty()){
+            return $this->errorResponse([
+                'errorCode' => 'UPDATE_ERROR',
+                'message'   => 'You need to specify a different value to update'
+            ], 422);
+        }
+
+        if ($request->has('percentage_bonus')){
+           $padiControl->percentage_bonus =  $request->percentage_bonus;
+        }
+
+        if ($request->has('available')){
+            $padiControl->available = $request->available;
+        }
+
+        $padiControl->save();
+
+        return $this->successResponse([
+            'errorCode'    => 'SUCCESS',
+            'message'      => 'Padiwin controls updated'
+        ], 200);
+
+    }
 
 
 }

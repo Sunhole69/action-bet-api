@@ -13,12 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('transactions', function (Blueprint $table) {
+        Schema::create('padi_win_controls', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('percentage_bonus')->default(10);
+            $table->boolean('available')->default(true);
             $table->foreignId('user_id')->constrained('users');
-            $table->enum('payment_type', ['Withdrawal', 'Deposit', 'Padiwin_bonus', 'Player_credit']);
-            $table->enum('status', ['pending', 'Success', 'Failed']);
-            $table->integer('amount');
             $table->timestamps();
         });
     }
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('padi_win_controls');
     }
 };
