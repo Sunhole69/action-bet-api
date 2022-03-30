@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Token extends Model
 {
     use HasFactory;
-    protected $fillable = ['created_at', 'token', 'username', 'user_type'];
+    protected $dates = ['created_at', 'updated_at', 'token_expiry'];
+
+    protected $fillable = ['created_at', 'token', 'token_expiry', 'username', 'user_type'];
 
     public function owner(){
         $this->belongsTo(User::class, 'username', 'username');

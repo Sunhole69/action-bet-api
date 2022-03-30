@@ -200,14 +200,11 @@ class AuthController extends Controller
         //Determine the authentication path through the user_type
         if ($data['user_type'] === 'player'){
             $response = $this->initiatePlayerToken($data);
-        }
-
-        if ($data['user_type'] === 'agency'){
-            $response = $this->initiateAgencyToken($data);
-        }
-
-        if ($data['user_type'] === 'admin'){
-            $response = $this->initiateAdminToken($data);
+        }else{
+            return $this->errorResponse([
+                'errorCode' => 'AUTHENTICATION_ERROR',
+                'message'   => 'This account is not a player'
+            ], 422);
         }
 
        $responseData = [
@@ -245,6 +242,13 @@ class AuthController extends Controller
             'username'  => $request->username,
             'agency'    => $request->username
         ];
+
+       if ($user->user_type !== 'agency'){
+           return $this->errorResponse([
+               'errorCode' => 'AUTHENTICATION_ERROR',
+               'message'   => 'This account is not an agency'
+           ], 422);
+       }
         $response = $this->initiateAgencyToken($data);
 
         $responseData = [

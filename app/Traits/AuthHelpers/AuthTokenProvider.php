@@ -83,7 +83,7 @@ trait AuthTokenProvider
             //Update the old token record
             $localToken->update([
                 'token' => $remoteToken['data']['token'],
-                'created_at' => Carbon::now(),
+                'token_expiry' => Carbon::now()->addMinutes(9),
             ]);
             // If the user token;
             return $remoteToken['data']['token'];
@@ -91,9 +91,10 @@ trait AuthTokenProvider
             // Retrieve new token from the remote server
             $remoteToken =  $this->getUserRemoteToken($data);
             Token::create([
-                'token' => $remoteToken['data']['token'],
-                'user_type' => $data['user_type'],
-                'username' => $data['username']
+                'token'        => $remoteToken['data']['token'],
+                'user_type'    => $data['user_type'],
+                'token_expiry' => Carbon::now()->addMinutes(9),
+                'username'     => $data['username']
             ]);
             // If the user token;
             return $remoteToken['data']['token'];
@@ -192,12 +193,16 @@ trait AuthTokenProvider
      * Common authentication utility methods
      */
     private function checkTokenValidity($token){
+//        dd(Carbon::now());
+        $tokenDate = Carbon::parse($token->token_expiry);
         // If local token is still valid i.e not expired due to time factor(8min max)
-//        if (Carbon::now()->subMinutes(8) > $token->updated_at){
-//            return false;
-//        }
-//        $token->updated_at = Carbon::now()->addMinutes(8);
-//        $token->save();
+        if ($tokenDate <= Carbon::now()){
+            return false;
+        }
+
+        Token::where('id', $token->id)->update([
+            'token_expiry'   => Carbon::now()->addMinutes(9)
+        ]);
         return true;
     }
 

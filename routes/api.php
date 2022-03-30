@@ -26,6 +26,8 @@ use Illuminate\Support\Facades\Route;
 Route::post('agency/login',                                [AuthController::class, 'agencyLogin']);
 Route::post('admin/login',                                 [AuthController::class, 'adminLogin']);
 Route::patch('/user/update-status/{user_id}',              [UserController::class, 'updateUserStatus']);
+
+
 // End of routes that are not needed now
 
 
@@ -34,7 +36,7 @@ Route::patch('/user/update-status/{user_id}',              [UserController::clas
 Route::post('/sign-in',                                     [AuthController::class, 'login']);
 Route::post('/sign-up',                                     [AuthController::class, 'signUp']);
 Route::post('/agency/sign-up',                              [AuthController::class, 'registerAffiliate']);
-Route::post('/padiwin/sign-up/{ref_id}',                   [AuthController::class,    'signUpReferredUser']);
+Route::post('/padiwin/sign-up/{ref_id}',                    [AuthController::class,    'signUpReferredUser']);
 
 // Protected routes
 Route::group(['middleware' => ['token-check']], function () {
