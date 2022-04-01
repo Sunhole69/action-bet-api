@@ -2,13 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PasswordUpdateMail;
+use App\Mail\ResetPasswordMail;
 use App\Models\PadiWinUser;
+use App\Models\PasswordReset;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Traits\RequestHelpers\APIResponse;
 use App\Traits\RequestHelpers\RemoteAPIServerPlayerActions;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -76,8 +82,9 @@ class AuthController extends Controller
         // Check if agency exist
         if (!User::where('username', $request->agency)->first()){
             return $this->errorResponse([
+                'errorCode' => "AGENCY_ERROR",
                 'message' => 'Agency doesn\'t exist'
-            ], 422);
+            ], 404);
         }
 
         // Create the data needed for the remote BETTING API
@@ -95,8 +102,10 @@ class AuthController extends Controller
         // Drop the user details with the remote BETTING API
         $response = $this->registerPlayerRemotely($data);
 
+
         // If successful, save the user details into local database
         if ($response['errorCode'] === "SUCCESS"){
+         $data['verification_token'] = Str::random(50);
          $user =  User::create($data);
           Wallet::create([
               'user_id' => $user->id,
@@ -104,6 +113,8 @@ class AuthController extends Controller
               'bonus'   => 0
           ]);
         }
+
+        // Send verification link to users
 
         // Return response to user
         return $this->successResponse($response,200);
@@ -185,10 +196,17 @@ class AuthController extends Controller
         //3. verify user password, if authentication fails
         if(!$user || !Hash::check($fields['password'], $user->password)) {
             $response = [
-                'status' => 'fail',
-                'message' => 'Invalid username or password *l'
+                'status' => 'AUTHENTICATION_ERROR',
+                'message' => 'Invalid username or password'
             ];
             return $this->errorResponse($response, 401);
+        }
+
+        if (!$user->email_verified_at){
+            return $this->errorResponse([
+                'errorCode' => 'AUTHENTICATION_ERROR',
+                'message'   => 'Your account is unverified yet'
+            ], 401);
         }
 
         // Create the data needed for the remote BETTING API
@@ -249,6 +267,14 @@ class AuthController extends Controller
                'message'   => 'This account is not an agency'
            ], 422);
        }
+
+        if (!$user->email_verified_at){
+            return $this->errorResponse([
+                'errorCode' => 'AUTHENTICATION_ERROR',
+                'message'   => 'Your account is unverified yet'
+            ], 401);
+        }
+
         $response = $this->initiateAgencyToken($data);
 
         $responseData = [
@@ -279,6 +305,7 @@ class AuthController extends Controller
             return $this->errorResponse($response, 401);
         }
 
+
         // Create the data needed for the remote BETTING API
         $data = [
             'username'  => $request->username,
@@ -294,4 +321,109 @@ class AuthController extends Controller
         return $this->successResponse($responseData,200);
     }
 
+    public function verifyUser(Request $request, $token){
+        $user = User::where('verification_token', $token)->first();
+        if (!$user){
+            return $this->errorResponse([
+                'errorCode' => "VERIFICATION_ERROR",
+                'message' => 'Invalid verification token'
+            ], 404);
+        }
+
+        // Update the user registration records
+        $user->verification_token = null;
+        $user->email_verified_at = Carbon::now();
+        $user->save();
+
+
+        return $this->errorResponse([
+            'errorCode' => "SUCCESS",
+            'message' => 'Email verified successfully'
+        ], 202);
+
+    }
+
+    public function resetPassword(Request $request){
+        $request->validate([
+           'email' => 'required|string|email',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+        if (!$user){
+            return $this->errorResponse([
+                'errorCode' => "AUTHENTICATION_ERROR",
+                'message' => 'Email not found'
+            ], 404);
+        }
+
+        // Check if exist then update else create
+        $reset = PasswordReset::where('email', $request->email)->first();
+        $token = Str::random(50);
+        if ($reset){
+            $reset->token = $token;
+            $reset->expires_at = Carbon::now()->addMinutes(10);
+            $reset->save();
+        }else{
+            PasswordReset::create([
+                'email'        => $request->email,
+                'token'        => $token,
+                'expires_at'   => Carbon::now()->addMinutes(10)
+            ]);
+        }
+
+        // Mail the user concerning the update
+        Mail::to($user->email)->send(new ResetPasswordMail($user, $token));
+
+        // Send r
+        return $this->errorResponse([
+            'errorCode' => "SUCCESS",
+            'message' => 'Reset link has been sent to you email address'
+        ], 202);
+
+
+    }
+
+    public function chooseNewPassword(Request $request, $token){
+        $request->validate([
+            'password'  => 'required|string|confirmed'
+        ]);
+
+        $token = PasswordReset::where('token', $token)->first();
+        if (!$token){
+            return $this->errorResponse([
+                'errorCode' => "VALIDATION_ERROR",
+                'message' => 'Invalid reset token'
+            ], 422);
+        }
+
+        $tokenDate = Carbon::parse($token->expires_at);
+        // Check if it has not expired
+        if ($tokenDate <= Carbon::now()){
+            // Delete the token and send response to user
+            $token->delete();
+            return $this->errorResponse([
+                'errorCode' => "VALIDATION_ERROR",
+                'message' => 'Invalid reset token'
+            ], 422);
+        }
+
+        // Update user password
+        $user = User::where('email', $token->email)->first();
+        $user->password = $request->password;
+        $user->save();
+
+        // Delete token
+        $token->delete();
+
+        // Mail the user concerning the update
+        Mail::to($user->email)->send(new PasswordUpdateMail($user));
+
+        // Send r
+        return $this->errorResponse([
+            'errorCode' => "SUCCESS",
+            'message' => 'Your password has been updated successfully'
+        ], 202);
+
+
+    }
 }

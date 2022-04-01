@@ -25,7 +25,17 @@ use Illuminate\Support\Facades\Route;
 // Routes that are not needed now
 Route::post('agency/login',                                [AuthController::class, 'agencyLogin']);
 Route::post('admin/login',                                 [AuthController::class, 'adminLogin']);
-Route::patch('/user/update-status/{user_id}',              [UserController::class, 'updateUserStatus']);
+
+
+//Email verification
+Route::post('/verify-user/{token}',                         [AuthController::class, 'verifyUser']);
+
+// Password reset
+Route::post('/reset-password',                              [AuthController::class, 'resetPassword']);
+Route::post('/choose-new-password/{token}',                 [AuthController::class, 'chooseNewPassword']);
+
+
+Route::patch('/user/update-status/{user_id}',               [UserController::class, 'updateUserStatus']);
 
 
 // End of routes that are not needed now

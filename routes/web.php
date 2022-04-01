@@ -1,5 +1,7 @@
 <?php
 
+use App\Mail\WelcomeMail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,4 +17,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+// Routes for mailing
+Route::get('/email', function (){
+    $userDetails = [
+        'name'  => 'Adurotimi Joshua'
+    ];
+    Mail::to('adurotimijoshua@gmail.com')->send(new WelcomeMail($userDetails));
+
+   return new WelcomeMail($userDetails);
 });

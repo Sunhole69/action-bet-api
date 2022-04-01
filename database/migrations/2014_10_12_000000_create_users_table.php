@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('username')->unique();
             $table->string('phone')->unique();
             $table->timestamp('email_verified_at')->nullable();
+            $table->timestamp('verification_token')->nullable();
             $table->enum('user_type', ['player', 'agency', 'admin']);
             $table->string('agency')->nullable(); // If user is a player
             $table->string('password');
