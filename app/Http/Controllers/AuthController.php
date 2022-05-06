@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\PasswordUpdateMail;
 use App\Mail\ResetPasswordMail;
+use App\Models\Agency;
 use App\Models\PadiWinUser;
 use App\Models\PasswordReset;
 use App\Models\User;
@@ -24,12 +25,17 @@ class AuthController extends Controller
     public function registerAffiliate(Request $request){
         //1. Validating user inputs
         $request->validate([
-            'firstname' => 'required|string|max:255',
-            'lastname'  => 'required|string|max:255',
-            'username'  => 'required|string|max:255|unique:users,username',
-            'phone'     => 'required|string|unique:users,phone',
-            'email'     => 'required|string|unique:users,email',
-            'password'  => 'required|string|confirmed'
+            'firstname'         => 'required|string|max:255',
+            'lastname'          => 'required|string|max:255',
+            'gender'            => 'required|string|max:255',
+            'state'             => 'required|string|max:255',
+            'personal_address'  => 'required|string|max:255',
+            'shop_address'      => 'required|string|max:255',
+            'date_of_birth'     => 'nullable|string|max:255',
+            'username'          => 'required|string|max:255|unique:users,username',
+            'phone'             => 'required|unique:users,phone',
+            'email'             => 'required|string|unique:users,email',
+            'password'          => 'required|string|confirmed'
         ]);
 
         // Create the data needed for the remote BETTING API
@@ -50,12 +56,24 @@ class AuthController extends Controller
         if ($response['errorCode'] === "SUCCESS"){
             $regData = $request->all();
             $regData['user_type'] = 'agency';
-            User::create($regData);
+            $user = User::create($regData);
+
+            // Create an agency account for the agent
+            Agency::create([
+               'user_id'            => $user->id,
+               'shop_address'       => $request->shop_address,
+               'personal_address'   => $request->personal_address,
+               'gender'             => $request->gender,
+               'state'              => $request->state,
+               'date_of_birth'      => $request->date_of_birth,
+               'approved'           => true,
+               'active'             => true,
+            ]);
+
         }
 
         // If successful, save the user details into local database
         if ($response['errorCode'] === "SUCCESS"){
-            $user =  User::create($data);
             Wallet::create([
                 'user_id' => $user->id,
                 'balance'  => 0,
@@ -72,20 +90,19 @@ class AuthController extends Controller
         $request->validate([
             'firstname' => 'required|string|max:255',
             'lastname'  => 'required|string|max:255',
-            'agency'    => 'required|string|max:255',
             'username'  => 'required|string|max:255|unique:users,username',
             'phone'     => 'required|string|unique:users,phone',
             'email'     => 'required|string|unique:users,email',
             'password'  => 'required|string|confirmed'
         ]);
 
-        // Check if agency exist
-        if (!User::where('username', $request->agency)->first()){
-            return $this->errorResponse([
-                'errorCode' => "AGENCY_ERROR",
-                'message' => 'Agency doesn\'t exist'
-            ], 404);
-        }
+//        // Check if agency exist
+//        if (!User::where('username', $request->agency)->first()){
+//            return $this->errorResponse([
+//                'errorCode' => "AGENCY_ERROR",
+//                'message' => 'Agency doesn\'t exist'
+//            ], 404);
+//        }
 
         // Create the data needed for the remote BETTING API
         $data = [
@@ -95,7 +112,7 @@ class AuthController extends Controller
             'email'           => $request->email,
             'username'        => $request->username,
             'password'        => $request->password,
-            'agency'          => $request->agency,
+            'agency'          => 'telvida',
             'user_type'       => 'Player',
             'enabled'         => true,
         ];
@@ -169,6 +186,7 @@ class AuthController extends Controller
 
         // If successful, save the user details into local database
         if ($response['errorCode'] === "SUCCESS"){
+            $data['verification_token'] = Str::random(50);
             $user =  User::create($data);
             Wallet::create([
                 'user_id'  => $user->id,
@@ -233,7 +251,11 @@ class AuthController extends Controller
        ];
 
         //4. Return response to user along with cookie for authentication
-        return $this->successResponse($responseData,200);
+      return  $this->successResponseWithCookie($responseData, [
+            'name'  => 'token',
+            'value' => $response
+        ], 200);
+//        return $this->successResponse($responseData,200);
     }
 
     public function agencyLogin(Request $request){
@@ -388,6 +410,7 @@ class AuthController extends Controller
             'password'  => 'required|string|confirmed'
         ]);
 
+        error_log($token);
         $token = PasswordReset::where('token', $token)->first();
         if (!$token){
             return $this->errorResponse([

@@ -5,7 +5,7 @@
     email, we need this to activate your account.</p>
 
 
-@component('mail::button', ['url' => getenv('USER_FRONTEND_URL').'/verify/'.$user->verification_token])
+@component('mail::button', ['url' => getenv('USER_FRONTEND_URL').'/Auth/verify-email/'.$user->verification_token])
     Verify Email
 @endcomponent
 

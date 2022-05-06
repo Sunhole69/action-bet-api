@@ -20,11 +20,11 @@ trait APIResponse
         return response()->json($data, $code);
     }
 
-    private function successResponseWithCookie($data, $cookie, $code)
+    private function successResponseWithCookie($data, $cookie, $code=200)
     {
         return response()
-            ->json($data, 200)   // JsonResponse object
-            ->withCookie(cookie(  $cookie['name'], $cookie['value'], 50000));
+            ->json($data, $code)   // JsonResponse object
+            ->withCookie(cookie($cookie['name'], $cookie['value'], 50000));
     }
 
     protected function errorResponse($data, $code)

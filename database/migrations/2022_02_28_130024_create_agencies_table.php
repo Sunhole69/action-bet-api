@@ -15,14 +15,14 @@ return new class extends Migration
     {
         Schema::create('agencies', function (Blueprint $table) {
             $table->id();
-            $table->string('lastname');
-            $table->string('email')->unique();
-            $table->string('username')->unique();
-            $table->string('phone')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->boolean('enabled')->default(true);
-            $table->rememberToken();
+            $table->foreignId('user_id')->constrained('users');
+            $table->string('gender')->nullable();
+            $table->string('date_of_birth')->nullable();
+            $table->string('state')->nullable();
+            $table->string('personal_address', 500);
+            $table->string('shop_address', 500);
+            $table->boolean('approved')->default(true);
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }
