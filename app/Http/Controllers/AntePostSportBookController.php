@@ -19,14 +19,14 @@ class AntePostSportBookController extends Controller
 {
     use APIResponse;
     use ArrayJsonManager;
-    use AuthUserManager;
+//    use AuthUserManager;
     use RemoteAPIServerAntePostSportBookActions;
-    public $user;
-
-    public function __construct(Request $request)
-    {
-        $this->user = $this->getCurrentUser($request);
-    }
+//    public $user;
+//
+//    public function __construct(Request $request)
+//    {
+//        $this->user = $this->getCurrentUser($request);
+//    }
 
     public function fetchAntePostSports (){
 
@@ -108,12 +108,24 @@ class AntePostSportBookController extends Controller
 
     }
 
+    public function fetchLocalAntePostSports (){
+
+        $sportList = AntePostSportList::with('groups')->get();
+
+        /*
+         * Else if successful
+         * Sync response with the database
+         */
+        return $this->successResponse($sportList, 200);
+    }
+
 
     /*
-     * Sports book sync helpers
+     * Sports book sync helpers, No league
      */
     public function syncSports($sports){
-        $sports  = $this->arrayToJson($sports); // Converts the response array to json
+        $sports  = json_encode($sports); // Converts the response array to string
+        $sports = json_decode($sports); // Converts the sports string to object
         foreach ($sports->data as $sport){
             // Fetch from sports where the sport name exist
             $sportExist = AntePostSportList::where('name', $sport->name)->first();
@@ -128,7 +140,8 @@ class AntePostSportBookController extends Controller
     }
 
     public function syncSportGroups($groups, $sport_id){
-        $groups  = $this->arrayToJson($groups); // Converts the response array to json
+        $groups  = json_encode($groups); // Converts the response array to string
+        $groups = json_decode($groups); // Converts the sports string to object
         foreach ($groups->data as $group){
             // Fetch from sports where the sport name exist
             $groupExist = AntePostSportGroup::where('name', $group->name)->where('group_id', $group->group_id)->first();
@@ -143,29 +156,8 @@ class AntePostSportBookController extends Controller
         }
     }
 
-    public function syncGroupEvents($groups, $group_id){
-        $groups  = $this->arrayToJson($groups); // Converts the response array to json
-        foreach ($groups->data as $group){
-            // Fetch from sports where the sport name exist
-            $leagueExist = AntePostSportEventList::where('name', $group->name)->where('group_id', $group_id)->first();
-            if (!$leagueExist){
-                AntePostSportEventList::create([
-                    'group_id'     => $group_id,
-                    'search_code'  => $group->search_code,
-                    'name'         => $group->name,
-                    'startdate'    => $group->startdate,
-                    'multiplicity' => $group->multiplicity,
-                ]);
-            }
-        }
-    }
-
-
-    /*
-     * Synchronizes the data in the db with remote server
-     */
-    public function syncPrematchSportBook() {
-        $sportsArray = $this->initiateFetchAllPrematchSports();
+    public function syncAntePostSportBook() {
+        $sportsArray = $this->initiateFetchAllAntepostSports();
         $sports = $this->arrayToJson($sportsArray);
 
         // Save new ones to the database
@@ -173,17 +165,14 @@ class AntePostSportBookController extends Controller
 
         // Loop through to save the groups
         foreach ($sports->data as $sport){
+            set_time_limit(0);
             // get the groups, save and Sync
-           $groupsArray = $this->initiateFetchAllPrematchSportGroups($sport->sport_id);
-           $groups = $this->arrayToJson($groupsArray);
-           $this->syncSportGroups($groupsArray, $sport->sport_id);
+            $groupsArray = $this->initiateFetchAllAntePostSportGroups($sport->sport_id);
+            $groups = $this->arrayToJson($groupsArray);
 
-            // get the leagues, save and Sync
-            foreach ($groups->data as $group){
-                $leaguesArray = $this->initiateFetchAllPrematchGroupLeagues($group->group_id);
-                $leagues = $this->arrayToJson($leaguesArray);
-                $this->syncGroupLeagues($leagues, $group->group_id);
-            }
+            // Save new ones to the database
+            $this->syncSportGroups($groupsArray, $sport->sport_id);
+
         }
 
         return $this->successResponse([

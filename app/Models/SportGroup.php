@@ -15,4 +15,8 @@ class SportGroup extends Model
         'country_code',
         'events_count',
     ];
+
+    public function leagues(){
+        return $this->hasMany(SportLeague::class, 'group_id', 'group_id');
+    }
 }

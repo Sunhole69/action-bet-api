@@ -15,4 +15,8 @@ class SportLeague extends Model
         'country_code',
         'events_count',
     ];
+
+//    public function events(){
+//        return $this->hasMany(SportEventList::class, 'champ_id', 'champ_id');
+//    }
 }

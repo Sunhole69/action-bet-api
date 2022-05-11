@@ -13,4 +13,8 @@ class SpecialSportList extends Model
         'name',
         'events_count'
     ];
+
+    public function groups(){
+        return $this->hasMany(SpecialSportGroup::class, 'sport_id', 'sport_id');
+    }
 }

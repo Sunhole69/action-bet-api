@@ -13,4 +13,8 @@ class AntePostSportList extends Model
         'name',
         'events_count'
     ];
+
+    public function groups(){
+        return $this->hasMany(AntePostSportGroup::class, 'sport_id', 'sport_id');
+    }
 }

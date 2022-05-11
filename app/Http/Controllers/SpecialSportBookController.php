@@ -19,14 +19,14 @@ class SpecialSportBookController extends Controller
 {
     use APIResponse;
     use ArrayJsonManager;
-    use AuthUserManager;
+//    use AuthUserManager;
     use RemoteAPIServerSpecialSportBookActions;
-    public $user;
-
-    public function __construct(Request $request)
-    {
-        $this->user = $this->getCurrentUser($request);
-    }
+//    public $user;
+//
+//    public function __construct(Request $request)
+//    {
+//        $this->user = $this->getCurrentUser($request);
+//    }
 
     public function fetchSpecialSports (){
 
@@ -129,6 +129,18 @@ class SpecialSportBookController extends Controller
     }
 
 
+    public function fetchLocalSpecialSports (){
+
+        $sportList = SpecialSportList::with('groups.leagues')->get();
+
+        /*
+         * Else if successful
+         * Sync response with the database
+         */
+        return $this->successResponse($sportList, 200);
+    }
+
+
     /*
      * Sports book sync helpers
      */
@@ -200,7 +212,7 @@ class SpecialSportBookController extends Controller
      * Synchronizes the data in the db with remote server
      */
     public function syncSpecialSportBook() {
-        $sportsArray = $this->initiateFetchAllPrematchSports();
+        $sportsArray = $this->initiateFetchAllSpecialSports();
         $sports = $this->arrayToJson($sportsArray);
 
         // Save new ones to the database
@@ -208,17 +220,30 @@ class SpecialSportBookController extends Controller
 
         // Loop through to save the groups
         foreach ($sports->data as $sport){
+            set_time_limit(0);
             // get the groups, save and Sync
-            $groupsArray = $this->initiateFetchAllPrematchSportGroups($sport->sport_id);
+            $groupsArray = $this->initiateFetchAllSpecialSportGroups($sport->sport_id);
             $groups = $this->arrayToJson($groupsArray);
+
+            // Save new ones to the database
             $this->syncSportGroups($groupsArray, $sport->sport_id);
 
             // get the leagues, save and Sync
             foreach ($groups->data as $group){
-                $leaguesArray = $this->initiateFetchAllPrematchGroupLeagues($group->group_id);
+                $leaguesArray = $this->initiateFetchAllSpecialGroupLeagues($group->group_id);
                 $leagues = $this->arrayToJson($leaguesArray);
+                // Save new ones to the database
                 $this->syncGroupLeagues($leagues, $group->group_id);
+
+//                foreach ($leagues->data as $league){
+//                    $eventsArray = $this->initiateFetchAllPrematchLeagueEvents($league->champ_id);
+//                    $events = $this->arrayToJson($eventsArray);
+//
+//
+//                }
+
             }
+
         }
 
         return $this->successResponse([
