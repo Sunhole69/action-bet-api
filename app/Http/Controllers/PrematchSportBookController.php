@@ -169,6 +169,20 @@ class PrematchSportBookController extends Controller
         return $this->successResponse($sportList, 200);
     }
 
+
+    public function fetchLocalPrematchOddsStructure ($champ_id){
+
+        $structure = RematchOddsStructure::where('champ_id', $champ_id)->with('groups.signs')->get();
+
+        /*
+         * Else if successful
+         * Sync response with the database
+         */
+        return $this->showAll($structure, 200);
+    }
+
+
+
     /*
      * Sports book sync helpers
      */
@@ -226,10 +240,11 @@ class PrematchSportBookController extends Controller
     }
 
     public function syncLeaguesOdds($oddsStructure, $league_id){
-        $oddsStructure  = json_encode($oddsStructure); // Converts the response array to string
-        $oddsStructure = json_decode($oddsStructure); // Converts the sports string to object
+//        $oddsStructure  = json_encode($oddsStructure); // Converts the response array to string
+//        $oddsStructure = json_decode($oddsStructure); // Converts the sports string to object
         // Save all the structures
         foreach ($oddsStructure as $structure){
+            set_time_limit(0);
             // Check if the structure Exist
             if (!RematchOddsStructure::where('champ_id', $league_id)->where('button_name', $structure->button_name)->first()){
                 $stored_structure =  RematchOddsStructure::create([
@@ -319,9 +334,10 @@ class PrematchSportBookController extends Controller
                     $eventsArray = $this->initiateFetchAllPrematchLeagueEvents($league->champ_id);
                     $events = $this->arrayToJson($eventsArray);
 
-                   foreach ($events->data->oddstructure as $structure){
-                       $this->syncLeaguesOdds($structure, $league->champ_id);
-                   }
+                    $this->syncLeaguesOdds($events->data->oddstructure, $league->champ_id);
+//                   foreach ($events->data->oddstructure as $structure){
+//
+//                   }
 
                 }
 

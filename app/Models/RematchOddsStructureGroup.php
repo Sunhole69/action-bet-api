@@ -15,6 +15,6 @@ class RematchOddsStructureGroup extends Model
     }
 
     public function signs(){
-        return $this->hasMany(RematchOddsStructureGroupSign::class, 'adds_structure_group_id');
+        return $this->hasMany(RematchOddsStructureGroupSign::class, 'odds_structure_group_id');
     }
 }

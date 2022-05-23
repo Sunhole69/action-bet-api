@@ -79,11 +79,13 @@ Route::get('/sport-book/live/odds',                      [LiveSportBookControlle
 
 // Fetch local Prematch Sports Book Section
 Route::get('/sport-book/local/prematch/sports',           [PrematchSportBookController::class, 'fetchLocalPrematchSports']);
+Route::get('/sport-book/local/prematch/odds-structure/{champ_id}',   [PrematchSportBookController::class, 'fetchLocalPrematchOddsStructure']);
 Route::get('/sport-book/local/antepost/sports',           [AntePostSportBookController::class, 'fetchLocalAntePostSports']);
 Route::get('/sport-book/local/special/sports',            [SpecialSportBookController::class, 'fetchLocalSpecialSports']);
 
 // Protected routes
-Route::group(['middleware' => ['token-check']], function () {
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::post('/sign-out',                                [AuthController::class, 'logout']);
     Route::post('/payment/deposit',                         [TransactionController::class, 'deposit']);
     Route::post('/payment/withdraw',                        [TransactionController::class, 'withdraw']);
     Route::get('/payment/transactions',                     [TransactionController::class, 'myTransactions']);

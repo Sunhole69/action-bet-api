@@ -12,6 +12,6 @@ class RematchOddsStructure extends Model
     protected $guarded = [];
 
     public function groups(){
-        return $this->hasMany(RematchOddsStructureGroup::class, 'adds_structure_id');
+        return $this->hasMany(RematchOddsStructureGroup::class, 'odds_structure_id');
     }
 }

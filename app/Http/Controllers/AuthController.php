@@ -200,7 +200,6 @@ class AuthController extends Controller
         return $this->successResponse($response,200);
     }
 
-
     public function login(Request $request){
         //1. Validating user inputs
         $fields = $request->validate([
@@ -209,7 +208,7 @@ class AuthController extends Controller
         ]);
 
         //2. Verify user email
-        $user = User::where('username', $fields['username'])->first();
+        $user = User::where('username', $fields['username'])->with('wallet')->with('transactions')->first();
 
         //3. verify user password, if authentication fails
         if(!$user || !Hash::check($fields['password'], $user->password)) {
@@ -220,12 +219,12 @@ class AuthController extends Controller
             return $this->errorResponse($response, 401);
         }
 
-        if (!$user->email_verified_at){
-            return $this->errorResponse([
-                'errorCode' => 'AUTHENTICATION_ERROR',
-                'message'   => 'Your account is unverified yet'
-            ], 401);
-        }
+//        if (!$user->email_verified_at){
+//            return $this->errorResponse([
+//                'errorCode' => 'AUTHENTICATION_ERROR',
+//                'message'   => 'Your account is unverified yet'
+//            ], 401);
+//        }
 
         // Create the data needed for the remote BETTING API
         $data = [
@@ -235,6 +234,7 @@ class AuthController extends Controller
 
         //Determine the authentication path through the user_type
         if ($data['user_type'] === 'player'){
+            // Generate LCTECH token for user
             $response = $this->initiatePlayerToken($data);
         }else{
             return $this->errorResponse([
@@ -243,19 +243,22 @@ class AuthController extends Controller
             ], 422);
         }
 
+        $token = $user->createToken('myapptoken')->plainTextToken;
+
+        // Generate sanctum auth token for user
        $responseData = [
-           'role' => ucwords($data['user_type']),
-           'user' => $user,
-           'wallet' => $user->wallet,
-           'token' => $response,
+           'errorCode'    => 'SUCCESS',
+           'role'         => ucwords($data['user_type']),
+           'user'         => $user,
+           'token'        => $token,
        ];
+
 
         //4. Return response to user along with cookie for authentication
       return  $this->successResponseWithCookie($responseData, [
             'name'  => 'token',
-            'value' => $response
-        ], 200);
-//        return $this->successResponse($responseData,200);
+            'value' => $token
+        ], (5 * 365 * 24 * 60 * 60),200);
     }
 
     public function agencyLogin(Request $request){
@@ -448,5 +451,17 @@ class AuthController extends Controller
         ], 202);
 
 
+    }
+
+    public function logout(){
+        auth()->user()->tokens()->delete();
+        // Set cookie to logged_out
+        return  $this->successResponseWithCookie([
+            'errorCode'    => 'SUCCESS',
+            'message'      => 'User logged out'
+        ], [
+            'name'  => 'token',
+            'value' => 'logged_out'
+        ],  (30),200);
     }
 }
