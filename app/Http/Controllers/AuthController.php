@@ -7,6 +7,7 @@ use App\Mail\ResetPasswordMail;
 use App\Models\Agency;
 use App\Models\PadiWinUser;
 use App\Models\PasswordReset;
+use App\Models\Player;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Traits\RequestHelpers\APIResponse;
@@ -129,6 +130,12 @@ class AuthController extends Controller
               'balance'  => 0,
               'bonus'   => 0
           ]);
+
+          if ($data['user_type'] == 'Player'){
+              Player::create([
+                  'user_id' =>  $user->id
+              ]);
+          }
         }
 
         // Send verification link to users
@@ -208,7 +215,7 @@ class AuthController extends Controller
         ]);
 
         //2. Verify user email
-        $user = User::where('username', $fields['username'])->with('wallet')->with('transactions')->first();
+        $user = User::where('username', $fields['username'])->with('player')->with('wallet')->with('transactions')->first();
 
         //3. verify user password, if authentication fails
         if(!$user || !Hash::check($fields['password'], $user->password)) {
@@ -464,4 +471,178 @@ class AuthController extends Controller
             'value' => 'logged_out'
         ],  (30),200);
     }
+
+    public function fetchCurrentUser(){
+        auth()->user();
+
+        // Set cookie to logged_out
+        return  $this->successResponseWithCookie([
+            'errorCode'    => 'SUCCESS',
+            'message'      => 'User logged out'
+        ], [
+            'name'  => 'token',
+            'value' => 'logged_out'
+        ],  (30),200);
+    }
+
+
+    // Account update section
+    public function updatePlayerProfile(Request $request){
+        $request->validate([
+            'firstname' => 'required|string|max:255',
+            'lastname'  => 'required|string|max:255',
+            'phone'     => 'required|string',
+            'email'     => 'required|string',
+
+            'date_of_birth' => 'nullable|string',
+            'gender'        => 'nullable|string|max:255',
+            'country'       => 'nullable|string|max:255',
+            'state'         => 'nullable|string|max:255',
+            'city'          => 'nullable|string|max:255',
+            'address'       => 'nullable|string|max:450',
+        ]);
+
+
+        //Check if the email is taken
+        if (User::where('email', '=', $request->email)->where('id', '!=', auth()->user()->id)->first()){
+            return $this->errorResponse([
+                'errorCode'    => 'VALIDATION_ERROR',
+                'message'      => 'the email has been taken'
+            ], 422);
+        }
+
+        //Check if the phone number is taken
+        if (User::where('phone', '=', $request->phone)->where('id', '!=', auth()->user()->id)->first()){
+            return $this->errorResponse([
+                'errorCode'    => 'VALIDATION_ERROR',
+                'message'      => 'the phone has been taken'
+            ], 422);
+        }
+
+
+        // Update the primary profile
+        $user = User::find(auth()->user()->id);
+            $player = Player::where('user_id', $user->id)->first();
+            $user->fill($request->only([
+                'firstname',
+                'lastname',
+                'username',
+                'phone',
+                'email',
+            ]));
+            $user->save();
+
+            $player->fill($request->only([
+                'date_of_birth',
+                'gender',
+                'country',
+                'state',
+                'city',
+                'address',
+            ]));
+            $player->save();
+
+            $user = User::with('player')->with('transactions')->with('wallet')->find($user->id);
+
+            $token = $user->createToken('myapptoken')->plainTextToken;
+
+            // Generate sanctum auth token for user
+            $responseData = [
+                'errorCode'    => 'SUCCESS',
+                'user'         => $user,
+                'token'        => $token,
+            ];
+
+            //4. Return response to user along with cookie for authentication
+            return  $this->successResponseWithCookie($responseData, [
+                'name'  => 'token',
+                'value' => $token
+            ], (5 * 365 * 24 * 60 * 60),200);
+
+    }
+
+    public function updateAgencyProfile(Request $request){
+        $request->validate([
+            'firstname' => 'required|string|max:255',
+            'lastname'  => 'required|string|max:255',
+            'username'  => 'required|string|max:255|unique:users,username',
+            'phone'     => 'required|string|unique:users,phone',
+            'email'     => 'required|string|unique:users,email',
+
+
+            'personal_address'  => 'required|string|max:255',
+            'shop_address'      => 'required|string|max:255',
+            'date_of_birth'     => 'nullable|string|max:255',
+            'gender'            => 'nullable|string|max:255',
+            'state'             => 'required|string|max:255',
+        ]);
+
+        // Update the primary profile
+        $user = User::find(auth()->user()->id);
+            $agency = Agency::where('user_id', $user->id)->first();
+
+            $user->fill($request->only([
+                'firstname',
+                'lastname',
+                'username',
+                'phone',
+                'email',
+            ]));
+            $user->save();
+
+            $agency->fill($request->only([
+                'date_of_birth',
+                'gender',
+                'state',
+                'personal_address',
+                'shop_address',
+            ]));
+            $agency->save();
+
+            $user = User::with('agency')->with('transactions')->with('wallet')->find($user->id);
+
+            $token = $user->createToken('myapptoken')->plainTextToken;
+
+            // Generate sanctum auth token for user
+            $responseData = [
+                'errorCode'    => 'SUCCESS',
+                'user'         => $user,
+                'token'        => $token,
+            ];
+
+            //4. Return response to user along with cookie for authentication
+            return  $this->successResponseWithCookie($responseData, [
+                'name'  => 'token',
+                'value' => $token
+            ], (5 * 365 * 24 * 60 * 60),200);
+
+
+    }
+
+    public function changePassword(Request $request){
+        $request->validate([
+            'current_password'  => 'required|string',
+            'password'          => 'required|string|confirmed'
+        ]);
+
+        $user = User::find(auth()->user()->id);
+        // Confirm password
+        if(!Hash::check($request->current_password, $user->password)) {
+            return $this->errorResponse([
+                'errorCode' => 'AUTHENTICATION_ERROR',
+                'message'   => 'Incorrect password'
+            ], 401);
+        }
+
+        $user->password = $request->password;
+        $user->save();
+
+        return  $this->successResponse([
+            'errorCode'     =>  'SUCCESS',
+            'message'       =>  'Password updated'
+        ], 200);
+    }
+
+
+
 }

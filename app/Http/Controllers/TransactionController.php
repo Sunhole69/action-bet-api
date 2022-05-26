@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PadiWinControl;
 use App\Models\PadiWinUser;
+use App\Models\PaymentGateway;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Wallet;
@@ -235,6 +236,72 @@ class TransactionController extends Controller
     public function myWallet(){
         $wallet = Wallet::where('user_id', $this->user->id)->first();
         return $this->showOne($wallet);
+    }
+
+    public function getPaymentGatewayKeys(Request $request){
+//        if(auth()->user()->user_type != 'admin'){
+//            return $this->errorResponse([
+//                'errorCode'     => 'AUTHORIZATION_ERROR',
+//                'message'       => 'You are not authorized to perform this action'
+//            ], 401);
+//        }
+
+        $request->validate([
+            'name'           =>  'required|string|max:255',
+        ]);
+
+        $gateway = PaymentGateway::where('name', $request->name)->first();
+        if (!$gateway){
+            return $this->errorResponse([
+                'errorCode' =>  'GATEWAY_ERROR',
+                'message'   =>  'Payment gateway not found'
+            ], 404);
+        }
+
+        return $this->successResponse([
+            'errorCode'     =>  'SUCCESS',
+            'data'          => $gateway
+        ], 200);
+    }
+
+    public function updatePaymentGatewayKeys(Request $request){
+        if(auth()->user()->user_type != 'admin'){
+            return $this->errorResponse([
+                'errorCode'     => 'AUTHORIZATION_ERROR',
+                'message'       => 'You are not authorized to perform this action'
+            ], 401);
+        }
+
+        $request->validate([
+           'name'           =>  'required|string|max:255',
+           'public_key'     =>  'required|string|max:255'
+        ]);
+
+        if (strtolower($request->name) === 'monnify' && !$request->contract_code){
+            return $this->errorResponse([
+                'errorCode'     => 'DATA_ERROR',
+                'message'       => 'Please supply contract code'
+            ], 422);
+        }
+
+        $gateway = PaymentGateway::where('name', $request->name)->first();
+        if (!$gateway){
+            PaymentGateway::create([
+               'name'           =>  $request->name,
+               'public_key'     =>  $request->public_key,
+               'contract_code'  => $request->contract_code
+            ]);
+        }else{
+            $gateway->public_key    = $request->public_key;
+            $gateway->name          = $request->name;
+            $gateway->contract_code = $request->contract_code;
+            $gateway->save();
+        }
+
+        return $this->successResponse([
+            'errorCode'     =>  'SUCCESS',
+            'message'       => 'Payment gateway updated'
+        ], 200);
     }
 
 

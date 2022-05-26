@@ -85,12 +85,24 @@ Route::get('/sport-book/local/special/sports',            [SpecialSportBookContr
 
 // Protected routes
 Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::post('/update-player',                           [AuthController::class, 'updatePlayerProfile']);
+    Route::post('/change-password',                         [AuthController::class, 'changePassword']);
+    Route::post('/update-agency',                           [AuthController::class, 'updateAgencyProfile']);
     Route::post('/sign-out',                                [AuthController::class, 'logout']);
+    Route::post('/current-user',                            [AuthController::class, 'logout']);
+
+
+    // Transaction Routes
+    Route::post('/payment/update-gateway',                  [TransactionController::class, 'updatePaymentGatewayKeys']);
+    Route::post('/payment/fetch-gateway',                   [TransactionController::class, 'getPaymentGatewayKeys']);
     Route::post('/payment/deposit',                         [TransactionController::class, 'deposit']);
     Route::post('/payment/withdraw',                        [TransactionController::class, 'withdraw']);
     Route::get('/payment/transactions',                     [TransactionController::class, 'myTransactions']);
     Route::get('/payment/wallet',                           [TransactionController::class, 'myWallet']);
     Route::post('/payment/pay',                             [TransactionController::class, 'initiatePaymentGatewayTest']);
+
+
+
     Route::get('/user/{id}',                                [UserController::class, 'show']);
     Route::get('/user/me',                                  [UserController::class, 'showMe']);
     Route::get('/players',                                  [UserController::class, 'index']);

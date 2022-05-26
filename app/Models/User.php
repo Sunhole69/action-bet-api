@@ -70,4 +70,12 @@ class User extends Authenticatable
         return $this->hasMany(Transaction::class);
     }
 
+    public function player(){
+        return $this->hasOne(Player::class);
+    }
+
+    public function agency(){
+        return $this->hasOne(Agency::class);
+    }
+
 }
