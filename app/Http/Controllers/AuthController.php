@@ -300,18 +300,19 @@ class AuthController extends Controller
            ], 422);
        }
 
-        if (!$user->email_verified_at){
-            return $this->errorResponse([
-                'errorCode' => 'AUTHENTICATION_ERROR',
-                'message'   => 'Your account is unverified yet'
-            ], 401);
-        }
+//        if (!$user->email_verified_at){
+//            return $this->errorResponse([
+//                'errorCode' => 'AUTHENTICATION_ERROR',
+//                'message'   => 'Your account is unverified yet'
+//            ], 401);
+//        }
 
         $response = $this->initiateAgencyToken($data);
+        $token = $user->createToken('myapptoken')->plainTextToken;
 
         $responseData = [
             'user' => $user,
-            'token' => $response
+            'token' => $token
         ];
 
         //4. Return response to user along with cookie for authentication

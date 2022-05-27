@@ -100,7 +100,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/payment/transactions',                     [TransactionController::class, 'myTransactions']);
     Route::get('/payment/wallet',                           [TransactionController::class, 'myWallet']);
     Route::post('/payment/pay',                             [TransactionController::class, 'initiatePaymentGatewayTest']);
-
+    Route::post('/payment/add-bank-account',                [TransactionController::class, 'addBankAccount']);
+    Route::get('/payment/fetch-my-bank-account',            [TransactionController::class, 'fetchMyBankAccount']);
+    Route::post('/payment/request-withdrawal',              [TransactionController::class, 'requestWithdrawal']);
 
 
     Route::get('/user/{id}',                                [UserController::class, 'show']);
