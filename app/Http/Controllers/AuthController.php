@@ -242,7 +242,7 @@ class AuthController extends Controller
         //Determine the authentication path through the user_type
         if ($data['user_type'] === 'player'){
             // Generate LCTECH token for user
-            $response = $this->initiatePlayerToken($data);
+//            $response = $this->initiatePlayerToken($data);
         }else{
             return $this->errorResponse([
                 'errorCode' => 'AUTHENTICATION_ERROR',
@@ -251,6 +251,7 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken('myapptoken')->plainTextToken;
+
 
         // Generate sanctum auth token for user
        $responseData = [

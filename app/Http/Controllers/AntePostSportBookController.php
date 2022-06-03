@@ -85,18 +85,18 @@ class AntePostSportBookController extends Controller
          * Else if successful
          * Sync response with the database
          */
-        $this->syncGroupEvents($response, $group_id);
+//        $this->syncGroupEvents($response, $group_id);
         return $this->successResponse($response, 200);
 
     }
 
     public function fetchAntePostOddList($search_code){
-        if (!AntePostSportEventList::where('search_code', $search_code)->first()){
-            return $this->errorResponse([
-                'error' => 'Request failed',
-                'message' => 'There is no event with that search_id'
-            ], 422);
-        }
+//        if (!AntePostSportEventList::where('search_code', $search_code)->first()){
+//            return $this->errorResponse([
+//                'error' => 'Request failed',
+//                'message' => 'There is no event with that search_id'
+//            ], 422);
+//        }
 
         $response = $this->initiateFetchAllAntePostOddLists($search_code);
 

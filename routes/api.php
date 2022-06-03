@@ -3,6 +3,7 @@
 use App\Http\Controllers\AntePostSportBookController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CouponController;
+use App\Http\Controllers\HomeAdvertController;
 use App\Http\Controllers\LiveSportBookController;
 use App\Http\Controllers\PadiWinController;
 use App\Http\Controllers\PrematchSportBookController;
@@ -41,7 +42,7 @@ Route::patch('/user/update-status/{user_id}',               [UserController::cla
 
 
 // Public routes
-Route::post('/sign-in',                                     [AuthController::class, 'login']);
+Route::post('/sign-in',                                     [AuthController::class, 'login'])->name('login');
 Route::post('/sign-up',                                     [AuthController::class, 'signUp']);
 Route::post('/agency/sign-up',                              [AuthController::class, 'registerAffiliate']);
 Route::post('/padiwin/sign-up/{ref_id}',                    [AuthController::class,    'signUpReferredUser']);
@@ -82,6 +83,11 @@ Route::get('/sport-book/local/prematch/sports',           [PrematchSportBookCont
 Route::get('/sport-book/local/prematch/odds-structure/{champ_id}',   [PrematchSportBookController::class, 'fetchLocalPrematchOddsStructure']);
 Route::get('/sport-book/local/antepost/sports',           [AntePostSportBookController::class, 'fetchLocalAntePostSports']);
 Route::get('/sport-book/local/special/sports',            [SpecialSportBookController::class, 'fetchLocalSpecialSports']);
+
+
+// Fetch homepage promotion banners
+Route::get('/promotions/home-banners/get/{limit}',          [HomeAdvertController::class, 'fetchBanners']);
+Route::get('/promotions/home-banners/view/{id}',            [HomeAdvertController::class, 'fetchBanner']);
 
 // Protected routes
 Route::group(['middleware' => ['auth:sanctum']], function () {
@@ -138,6 +144,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/padiwin/get-my-link',                        [PadiWinController::class, 'generateMyLink']);
     Route::patch('/padiwin/update-control',                   [PadiWinController::class, 'updatePadiWinControl']);
 
+
+    // Admin routes
+    Route::post('/promotions/home-banners/create',              [HomeAdvertController::class, 'createBanner']);
+    Route::delete('/promotions/home-banners/delete/{id}',       [HomeAdvertController::class, 'deleteBanner']);
+    Route::patch('/promotions/home-banners/update/{id}',        [HomeAdvertController::class, 'updateBanner']);
 
 });
 
