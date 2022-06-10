@@ -14,6 +14,7 @@ use App\Traits\RequestHelpers\APIResponse;
 use App\Traits\RequestHelpers\RemoteAPIServerPlayerActions;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -485,6 +486,50 @@ class AuthController extends Controller
             'name'  => 'token',
             'value' => 'logged_out'
         ],  (30),200);
+    }
+
+    public function isUserLoggedIn(Request $request){
+        if (!$request->cookie('token')){
+            return $this->errorResponse([
+                'errorCode' =>  'AUTHENTICATION_ERROR',
+                'message'   =>  'Missing token'
+            ], 401);
+        }
+
+        $user_token = $request->cookie('token');
+        $token_data = \Laravel\Sanctum\PersonalAccessToken::findToken($user_token);
+
+        if (!$token_data){
+            return $this->errorResponse([
+                'errorCode' =>  'AUTHENTICATION_ERROR',
+                'message'   =>  'Invalid token'
+            ], 401);
+        }
+
+        $user = $token_data->tokenable;
+        $user = User::where('username', $user->username)->with('player')->with('wallet')->with('transactions')->first();
+
+
+        // Create the data needed for the remote BETTING API
+        $data = [
+            'username'  => $user->username,
+            'user_type' => $user->user_type
+        ];
+
+        // Return sanctum auth token for user
+        $responseData = [
+            'errorCode'    => 'SUCCESS',
+            'role'         => ucwords($data['user_type']),
+            'user'         => $user,
+            'token'        => $user_token,
+        ];
+
+
+        //4. Return response to user along with cookie for authentication
+        return  $this->successResponseWithCookie($responseData, [
+            'name'  => 'token',
+            'value' => $user_token
+        ], (5 * 365 * 24 * 60 * 60),200);
     }
 
 

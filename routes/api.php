@@ -44,6 +44,7 @@ Route::patch('/user/update-status/{user_id}',               [UserController::cla
 // Public routes
 Route::post('/sign-in',                                     [AuthController::class, 'login'])->name('login');
 Route::post('/sign-up',                                     [AuthController::class, 'signUp']);
+Route::post('/is-logged-in',                                [AuthController::class, 'isUserLoggedIn']);
 Route::post('/agency/sign-up',                              [AuthController::class, 'registerAffiliate']);
 Route::post('/padiwin/sign-up/{ref_id}',                    [AuthController::class,    'signUpReferredUser']);
 
